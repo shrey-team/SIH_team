@@ -92,26 +92,28 @@
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
     const SUPABASE_URL = 'https://nusxcdyngdgeieaylaic.supabase.co'
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_KEY'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51c3hjZHluZ2RnZWllYXlsYWljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczMTY3NDgsImV4cCI6MjA3Mjg5Mjc0OH0.vV3WAe3pSIH373Njj59dEIJ8mZs0TCrO3_hiezOKAW0'
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
     function showRegister() {
       document.getElementById("loginForm").classList.add("hidden");
       document.getElementById("registerForm").classList.remove("hidden");
+      document.getElementById("loginError").style.display = "none";
+      document.getElementById("registerError").style.display = "none";
     }
     function showLogin() {
       document.getElementById("registerForm").classList.add("hidden");
       document.getElementById("loginForm").classList.remove("hidden");
+      document.getElementById("loginError").style.display = "none";
+      document.getElementById("registerError").style.display = "none";
     }
-
-    // --- Registration with OTP ---
+    // --- Registration using Supabase
     async function register(e) {
       if (e) e.preventDefault();
       const user = document.getElementById("regUsername").value.trim();
       const pass = document.getElementById("regPassword").value.trim();
       const aadhaar = document.getElementById("regAadhaar").value.trim();
       const phone = document.getElementById("regPhone").value.trim();
-
       if (!user || !pass || !aadhaar || !phone) {
         document.getElementById("registerError").innerText = "⚠ All fields are required.";
         document.getElementById("registerError").style.display = "block";
@@ -127,61 +129,71 @@
         document.getElementById("registerError").style.display = "block";
         return;
       }
-
       try {
+        // Optional: Check if user already exists
         const { data: existing } = await supabase
-          .from('registrations')
-          .select('username')
-          .eq('username', user);
+            .from('registrations')
+            .select('username')
+            .eq('username', user);
         if (existing && existing.length > 0) {
           document.getElementById("registerError").innerText = "⚠ Username already registered.";
           document.getElementById("registerError").style.display = "block";
           return;
         }
-
-        // ✅ Generate OTP & save temp user
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        localStorage.setItem("otp", otp);
-        localStorage.setItem("tempUser", JSON.stringify({ username: user, password: pass, aadhar: aadhaar, phone: phone }));
-
-        alert("✅ OTP generated: " + otp + " (In real app, send via SMS)");
-
-        window.location.href = "otp.html"; // redirect
+        // Insert new registration
+        const { data, error } = await supabase
+          .from('registrations')
+          .insert([{ 
+            username: user, 
+            password: pass, 
+            aadhar: aadhaar, 
+            phone: phone 
+          }]);
+        if (error) throw error;
+        alert("✅ Registration Successful! Please login.");
+        showLogin();
       } catch (error) {
-        console.error(error);
+        document.getElementById("registerError").innerText = "⚠ Registration failed. Try again.";
+        document.getElementById("registerError").style.display = "block";
+        console.error('Supabase insert error:', error);
       }
     }
-
-    // --- Login using Supabase ---
+    // --- Login using Supabase
     async function login(e) {
       if (e) e.preventDefault();
       const user = document.getElementById("loginUsername").value.trim();
       const pass = document.getElementById("loginPassword").value.trim();
-
+      // Query for matching user in Supabase
       const { data, error } = await supabase
         .from('registrations')
         .select('*')
         .eq('username', user)
         .eq('password', pass);
-
-      if (error || !data || data.length === 0) {
+      if (error) {
+        document.getElementById("loginError").innerText = "❌ Error reading database.";
         document.getElementById("loginError").style.display = "block";
-      } else {
+        return;
+      }
+      if (data && data.length > 0) {
         localStorage.setItem("loggedIn", "true");
         window.location.href = "home.html";
+      } else {
+        document.getElementById("loginError").innerText = "❌ Invalid username or password.";
+        document.getElementById("loginError").style.display = "block";
       }
     }
-
-    // Handlers
+    // Attach action handlers
     document.getElementById("registerSwitch").onclick = showRegister;
     document.getElementById("loginSwitch").onclick = showLogin;
     document.getElementById("registerBtn").onclick = register;
     document.getElementById("loginBtn").onclick = login;
 
-    // Auto redirect if already logged in
-    if (localStorage.getItem("loggedIn") === "true") {
-      window.location.href = "home.html";
-    }
+    // Optional: auto-redirect if already logged in
+    window.onload = function() {
+      if (localStorage.getItem("loggedIn") === "true") {
+        window.location.href = "home.html";
+      }
+    };
   </script>
 </body>
 </html>
