@@ -151,14 +151,13 @@
   }
 </script>
 
-
   <header>
     CivicRevolution
     <span>Empowering Citizens</span>
   </header>
 
   <div class="hero">
-    <h2>Welcome👋</h2>
+    <h2>Welcome👋 <span id="userName"></span></h2>
     <p>Report issues, track progress, and make your community stronger 💪</p>
   </div>
 
@@ -202,10 +201,16 @@
   </footer>
 
   <script>
+  // Logout function
   function logout() {
     localStorage.removeItem("loggedIn");
+    localStorage.removeItem("username"); // ✅ also remove username
     window.location.href = "index.html";
   }
+
+  // Show user details
+  const userName = localStorage.getItem("username") || "Guest";
+  document.getElementById("userName").textContent = userName;
 </script>
 
 </body>
