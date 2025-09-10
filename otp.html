@@ -3,92 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Verify OTP</title>
+  <title>OTP Verification</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #2c8ef4, #14cba8);
+      background: #f0f4f8;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
-    .otp-box {
+    .otp-container {
       background: #fff;
       padding: 2rem;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 400px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       text-align: center;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
     }
     input {
-      width: 100%;
       padding: 0.8rem;
+      width: 100%;
       margin: 0.5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 10px;
       font-size: 1rem;
-      text-align: center;
-      letter-spacing: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
     button {
+      padding: 0.8rem;
       width: 100%;
-      padding: 0.9rem;
       background: #2563eb;
       color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 1rem;
+      border-radius: 8px;
+      margin-top: 0.5rem;
       cursor: pointer;
-      margin-top: 0.8rem;
     }
     button:hover { background: #1e4ed8; }
-    p { margin-top: 1rem; color: red; font-size: 0.9rem; display: none; }
+    #error { color: red; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
-  <div class="otp-box">
-    <h2>Verify OTP</h2>
+  <div class="otp-container">
+    <h2>OTP Verification</h2>
     <p>Enter the OTP sent to your phone</p>
-    <input type="text" id="otpInput" maxlength="6" placeholder="------" />
-    <button id="verifyOtpBtn">Verify</button>
-    <p id="otpError">❌ Invalid OTP. Please try again.</p>
+    <input type="text" id="otpInput" maxlength="6" placeholder="6-digit OTP" />
+    <button id="verifyBtn">Verify OTP</button>
+    <p id="error"></p>
   </div>
 
-  <script>
-    // Dummy OTP storage (in real world: send SMS via Twilio/MSG91 etc.)
-    const generatedOtp = localStorage.getItem("otp");
-    const userData = JSON.parse(localStorage.getItem("tempUser"));
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    const SUPABASE_URL = 'https://nusxcdyngdgeieaylaic.supabase.co'
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_KEY'
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    document.getElementById("verifyOtpBtn").onclick = async function() {
+    document.getElementById("verifyBtn").onclick = async () => {
       const enteredOtp = document.getElementById("otpInput").value.trim();
-      if (enteredOtp === generatedOtp) {
-        // Save user into Supabase now
-        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
-        const supabase = createClient(
-          "https://nusxcdyngdgeieaylaic.supabase.co",
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51c3hjZHluZ2RnZWllYXlsYWljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczMTY3NDgsImV4cCI6MjA3Mjg5Mjc0OH0.vV3WAe3pSIH373Njj59dEIJ8mZs0TCrO3_hiezOKAW0"
-        );
+      const storedOtp = localStorage.getItem("otp");
+      const tempUser = JSON.parse(localStorage.getItem("tempUser"));
 
-        const { error } = await supabase
-          .from("registrations")
-          .insert([userData]);
-
-        if (error) {
-          alert("❌ Failed to save user.");
-          console.error(error);
-        } else {
-          alert("✅ Registration verified! Please login.");
-          localStorage.removeItem("otp");
-          localStorage.removeItem("tempUser");
-          window.location.href = "index.html";
-        }
-      } else {
-        document.getElementById("otpError").style.display = "block";
+      if (!enteredOtp || enteredOtp !== storedOtp) {
+        document.getElementById("error").innerText = "❌ Invalid OTP. Try again.";
+        return;
       }
+
+      // ✅ OTP matched → insert into Supabase
+      const { error } = await supabase.from("registrations").insert([tempUser]);
+
+      if (error) {
+        document.getElementById("error").innerText = "⚠ Registration failed.";
+        console.error(error);
+        return;
+      }
+
+      // Cleanup
+      localStorage.removeItem("otp");
+      localStorage.removeItem("tempUser");
+
+      alert("✅ OTP Verified! Registration complete.");
+      window.location.href = "index.html"; // back to login
     };
   </script>
 </body>
 </html>
-
