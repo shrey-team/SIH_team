@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Report Issue - CivicRevolution</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   <style>
     body {
       margin: 0;
@@ -89,16 +93,26 @@
     .back-btn a:hover {
       color: #1d4ed8;
     }
+    /* Map style */
     #map {
       width: 100%;
       height: 300px;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       border-radius: 12px;
-      border: 1px solid #d1d5db;
+      overflow: hidden;
     }
     .loc-btn {
-      margin-bottom: 1.5rem;
+      width: 100%;
+      padding: 1rem;
       background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 1rem;
     }
     .loc-btn:hover {
       background: #059669;
@@ -136,7 +150,11 @@
 
       <label for="location">Location</label>
       <input type="text" id="location" placeholder="Enter location or landmark" required />
+
+      <!-- Button for auto-detect -->
       <button type="button" class="loc-btn" onclick="getUserLocation()">📍 Use My Location</button>
+
+      <!-- Leaflet Map -->
       <div id="map"></div>
 
       <button type="submit">📩 Submit Report</button>
@@ -146,7 +164,9 @@
     </div>
   </div>
 
-  <!-- Supabase + Location logic -->
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
@@ -154,22 +174,64 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51c3hjZHluZ2RnZWllYXlsYWljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczMTY3NDgsImV4cCI6MjA3Mjg5Mjc0OH0.vV3WAe3pSIH373Njj59dEIJ8mZs0TCrO3_hiezOKAW0'
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-
     const bucketName = 'Complaint-Images'
 
+    // ==============================
+    // Leaflet Map Setup
+    // ==============================
+    let leafletMap, leafletMarker
+
+    function initLeafletMap() {
+      leafletMap = L.map("map").setView([18.5204, 73.8567], 12) // Pune default
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(leafletMap)
+
+      leafletMap.on("click", function (e) {
+        const lat = e.latlng.lat
+        const lng = e.latlng.lng
+        document.getElementById("location").value = `${lat}, ${lng}`
+
+        if (leafletMarker) leafletMap.removeLayer(leafletMarker)
+        leafletMarker = L.marker([lat, lng]).addTo(leafletMap)
+      })
+    }
+    window.onload = initLeafletMap
+
+    // ==============================
+    // Geolocation API
+    // ==============================
+    function getUserLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude
+            const lon = pos.coords.longitude
+            document.getElementById("location").value = `${lat}, ${lon}`
+            leafletMap.setView([lat, lon], 15)
+            if (leafletMarker) leafletMap.removeLayer(leafletMarker)
+            leafletMarker = L.marker([lat, lon]).addTo(leafletMap)
+          },
+          (err) => alert("Error: " + err.message)
+        )
+      } else {
+        alert("Geolocation not supported")
+      }
+    }
+    window.getUserLocation = getUserLocation
+
+    // ==============================
+    // Upload Image
+    // ==============================
     async function uploadImage(file) {
       if (!file) return null
       const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}.${fileExt}`
       const filePath = `${fileName}`
       try {
-        const { data, error } = await supabase.storage
-          .from(bucketName)
-          .upload(filePath, file)
+        const { data, error } = await supabase.storage.from(bucketName).upload(filePath, file)
         if (error) throw error
-        const { data: { publicUrl }, error: urlError } = supabase.storage
-          .from(bucketName)
-          .getPublicUrl(filePath)
+        const { data: { publicUrl }, error: urlError } = supabase.storage.from(bucketName).getPublicUrl(filePath)
         if (urlError) throw urlError
         return publicUrl
       } catch (error) {
@@ -178,6 +240,9 @@
       }
     }
 
+    // ==============================
+    // Submit Report
+    // ==============================
     async function submitReport(event) {
       event.preventDefault()
       const issue = document.getElementById('issue').value.trim()
@@ -186,18 +251,9 @@
       const photoInput = document.getElementById('photo')
       const photoFile = photoInput.files[0]
 
-      if (!issue) {
-        alert('Please select an issue type')
-        return
-      }
-      if (!desc) {
-        alert('Please enter description')
-        return
-      }
-      if (!location) {
-        alert('Please enter location')
-        return
-      }
+      if (!issue) return alert('Please select an issue type')
+      if (!desc) return alert('Please enter description')
+      if (!location) return alert('Please enter location')
 
       let image_url = null
       if (photoFile) {
@@ -224,56 +280,6 @@
     }
 
     document.getElementById('reportForm').addEventListener('submit', submitReport)
-
-    // Geolocation API
-    window.getUserLocation = function () {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (pos) => {
-            const lat = pos.coords.latitude
-            const lon = pos.coords.longitude
-            document.getElementById('location').value = `${lat}, ${lon}`
-          },
-          (err) => {
-            alert("Failed to get location: " + err.message)
-          }
-        )
-      } else {
-        alert("Geolocation not supported")
-      }
-    }
   </script>
-
-  <!-- Google Maps API (for autocomplete + map picker) -->
-  <script>
-    let autocomplete, map, marker
-
-    function initAutocomplete() {
-      autocomplete = new google.maps.places.Autocomplete(
-        document.getElementById("location"),
-        { types: ["geocode"] }
-      )
-
-      // Init map
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: 18.5204, lng: 73.8567 }, // Pune default
-        zoom: 12,
-      })
-
-      // On map click, set marker + location input
-      map.addListener("click", (event) => {
-        const lat = event.latLng.lat()
-        const lng = event.latLng.lng()
-        document.getElementById("location").value = `${lat}, ${lng}`
-
-        if (marker) marker.setMap(null)
-        marker = new google.maps.Marker({
-          position: { lat, lng },
-          map: map,
-        })
-      })
-    }
-  </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initAutocomplete" async defer></script>
 </body>
 </html>
