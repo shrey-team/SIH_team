@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verify OTP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #2c8ef4, #14cba8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .otp-box {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+    input {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 0.9rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 0.8rem;
+    }
+    button:hover { background: #1e4ed8; }
+    p { margin-top: 1rem; color: red; font-size: 0.9rem; display: none; }
+  </style>
+</head>
+<body>
+  <div class="otp-box">
+    <h2>Verify OTP</h2>
+    <p>Enter the OTP sent to your phone</p>
+    <input type="text" id="otpInput" maxlength="6" placeholder="------" />
+    <button id="verifyOtpBtn">Verify</button>
+    <p id="otpError">❌ Invalid OTP. Please try again.</p>
+  </div>
+
+  <script>
+    // Dummy OTP storage (in real world: send SMS via Twilio/MSG91 etc.)
+    const generatedOtp = localStorage.getItem("otp");
+    const userData = JSON.parse(localStorage.getItem("tempUser"));
+
+    document.getElementById("verifyOtpBtn").onclick = async function() {
+      const enteredOtp = document.getElementById("otpInput").value.trim();
+      if (enteredOtp === generatedOtp) {
+        // Save user into Supabase now
+        const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
+        const supabase = createClient(
+          "https://nusxcdyngdgeieaylaic.supabase.co",
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51c3hjZHluZ2RnZWllYXlsYWljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczMTY3NDgsImV4cCI6MjA3Mjg5Mjc0OH0.vV3WAe3pSIH373Njj59dEIJ8mZs0TCrO3_hiezOKAW0"
+        );
+
+        const { error } = await supabase
+          .from("registrations")
+          .insert([userData]);
+
+        if (error) {
+          alert("❌ Failed to save user.");
+          console.error(error);
+        } else {
+          alert("✅ Registration verified! Please login.");
+          localStorage.removeItem("otp");
+          localStorage.removeItem("tempUser");
+          window.location.href = "index.html";
+        }
+      } else {
+        document.getElementById("otpError").style.display = "block";
+      }
+    };
+  </script>
+</body>
+</html>
 
