@@ -19,8 +19,8 @@
       background: #0a3d62;
       padding: 1rem 2rem;
       color: #fff;
-      font-size: 1.5rem;
-      font-weight: bold;
+      font-size: xx-large;
+      font-weight: 900;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -113,9 +113,9 @@
       font-weight: 600;
     }
 
-    header {
-      font-size: xx-large;
-      font-weight: 900;
+    canvas {
+      max-width: 600px;
+      margin: 2rem auto;
     }
 
     footer {
@@ -139,27 +139,6 @@
 
     footer button:hover {
       background: rgba(255,255,255,0.25);
-    }
-
-    #live-complaints-container {
-      margin: 2rem;
-    }
-
-    #complaint-list {
-      list-style: none;
-      padding: 0;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: white;
-      font-size: 1rem;
-      color: #222;
-    }
-
-    #complaint-list li {
-      padding: 8px 12px;
-      border-bottom: 1px solid #eee;
     }
   </style>
 </head>
@@ -203,18 +182,15 @@
     </div>
   </div>
 
+  <!-- 🌍 Real-time Community Impact Dashboard -->
   <div class="impact">
-    <h3>🌍 Community Impact</h3>
+    <h3>🌍 Community Impact (Real-Time)</h3>
     <div class="impact-stats">
-      <div class="impact-box">📌 23<br /><small>Total Reports</small></div>
-      <div class="impact-box">⏳ 12<br /><small>In Progress</small></div>
-      <div class="impact-box">✅ 18<br /><small>Resolved</small></div>
+      <div class="impact-box">📌 <span id="totalReports">0</span><br /><small>Total Reports</small></div>
+      <div class="impact-box">⏳ <span id="inProgress">0</span><br /><small>In Progress</small></div>
+      <div class="impact-box">✅ <span id="resolved">0</span><br /><small>Resolved</small></div>
     </div>
-  </div>
-
-  <div id="live-complaints-container">
-    <h3>New Complaints (live):</h3>
-    <ul id="complaint-list"></ul>
+    <canvas id="impactChart"></canvas>
   </div>
 
   <footer>
@@ -235,34 +211,69 @@
     document.getElementById("userName").textContent = userName;
   </script>
 
-  <!-- ✅ Fixed Supabase Import -->
+  <!-- ✅ Supabase + Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const { createClient } = supabase;
-
     const supabaseClient = createClient(
       'https://xnqtjcovuqzajuqzaunf.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'
+      'YOUR_PUBLIC_ANON_KEY' // ⚠ Replace with your Supabase anon key
     );
 
-    const channel = supabaseClient.channel('complaints-realtime');
-
-    channel.on(
-      'postgres_changes',
-      { event: 'INSERT', schema: 'public', table: 'complaints' },
-      (payload) => {
-        const ul = document.getElementById('complaint-list');
-        const li = document.createElement('li');
-        li.textContent = ${payload.new.issue_type}: ${payload.new.description};
-        li.style.padding = '6px 12px';
-        li.style.borderBottom = '1px solid #ddd';
-        ul.prepend(li);
-
-        if (ul.children.length > 50) {
-          ul.removeChild(ul.lastChild);
+    // Setup Chart.js
+    const ctx = document.getElementById("impactChart").getContext("2d");
+    const impactChart = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: ["In Progress", "Resolved"],
+        datasets: [{
+          label: "Complaints Status",
+          data: [0, 0],
+          backgroundColor: ["#f39c12", "#27ae60"],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "bottom"
+          }
         }
       }
-    ).subscribe();
+    });
+
+    async function fetchStats() {
+      const { data, error } = await supabaseClient.from("complaints").select("status");
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      let total = data.length;
+      let inProgress = data.filter(c => c.status === "in_progress").length;
+      let resolved = data.filter(c => c.status === "resolved").length;
+
+      document.getElementById("totalReports").textContent = total;
+      document.getElementById("inProgress").textContent = inProgress;
+      document.getElementById("resolved").textContent = resolved;
+
+      // Update chart
+      impactChart.data.datasets[0].data = [inProgress, resolved];
+      impactChart.update();
+    }
+
+    // Initial fetch
+    fetchStats();
+
+    // Subscribe to real-time updates
+    supabaseClient.channel("complaints-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "complaints" }, (payload) => {
+        console.log("Change received!", payload);
+        fetchStats();
+      })
+      .subscribe();
   </script>
 </body>
 </html>
