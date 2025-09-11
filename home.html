@@ -29,25 +29,21 @@ footer button:hover { background:rgba(255,255,255,0.25);}
 </style>
 </head>
 <body>
-
 <header>
   CivicRevolution
   <span>Empowering Citizens</span>
 </header>
-
 <div class="hero">
   <h2><span id="userGreeting"></span> <span id="userName">Guest</span></h2>
   <p>Report issues, track progress, and make your community stronger 💪</p>
 </div>
-
 <div class="issue-grid">
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/road.png">🚧 Pothole</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/trash.png">🗑 Garbage</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/street-light.png">💡 Street Light</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/water.png">💧 Water Leakage</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/error.png">⚠ Other</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">🚧 Pothole</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">🗑 Garbage</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">💡 Street Light</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">💧 Water Leakage</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">⚠ Other</div>
 </div>
-
 <div class="impact">
   <h3>🌍 Community Impact</h3>
   <div class="impact-stats">
@@ -56,7 +52,6 @@ footer button:hover { background:rgba(255,255,255,0.25);}
     <div class="impact-box"><div id="resolvedReports" class="count">0</div><small>Resolved</small></div>
   </div>
 </div>
-
 <div class="user-impact impact">
   <h3>📝 Your Reports</h3>
   <div class="impact-stats">
@@ -65,82 +60,54 @@ footer button:hover { background:rgba(255,255,255,0.25);}
     <div class="impact-box"><div id="userResolved" class="count">0</div><small>Resolved</small></div>
   </div>
 </div>
-
 <div class="badges">
   <h3>🏆 Your Achievements</h3>
   <div class="badges-list" id="badgesList">
     <div class="badge-box">No achievements yet</div>
   </div>
 </div>
-
 <footer>
   <button onclick="window.location.href='home.html'">🏠 Home</button>
   <button onclick="window.location.href='report.html'">📝 Report</button>
   <button onclick="window.location.href='maps.html'">🗺 Maps</button>
   <button onclick="logout()">🚪 Logout</button>
 </footer>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  const { createClient } = supabase;
-  const supabaseClient = createClient(
+  const supabase = supabase.createClient(
     "https://xnqtjcovuqzajuqzaunf.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
   );
-
-  if(localStorage.getItem("loggedIn")!=="true") { window.location.href="index.html"; return; }
-
-  // Use localStorage username directly
+  if(localStorage.getItem("loggedIn") !== "true") { window.location.href="index.html"; return; }
   const userName = localStorage.getItem("username") || "Guest";
   document.getElementById("userName").textContent = userName;
-
-  // Greeting
   const hours = new Date().getHours();
   let greeting = hours<12?"Good morning":hours<18?"Good afternoon":"Good evening";
   document.getElementById("userGreeting").textContent = `${greeting},`;
-
-  // Fetch community counts
-  async function fetchCounts(){
-    try {
-      const { data } = await supabaseClient.from("complaints").select("*");
-      document.getElementById("totalReports").textContent = data?.length || 0;
-      document.getElementById("inProgressReports").textContent = data?.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length || 0;
-      document.getElementById("resolvedReports").textContent = data?.filter(c=>c.status.toLowerCase()==="resolved").length || 0;
-    } catch(e){ console.error(e); }
+  // Fetch all complaints for community summary
+  const { data: allComplaints } = await supabase.from("complaints").select("*");
+  document.getElementById("totalReports").textContent = allComplaints.length;
+  document.getElementById("inProgressReports").textContent = allComplaints.filter(c => ["in progress", "in_progress"].includes(c.status?.toLowerCase())).length;
+  document.getElementById("resolvedReports").textContent = allComplaints.filter(c => c.status?.toLowerCase() === "resolved").length;
+  // Fetch user-specific complaints for user stats
+  const { data: userComplaints } = await supabase.from("complaints").select("*").eq("username", userName);
+  document.getElementById("userTotal").textContent = userComplaints.length;
+  document.getElementById("userInProgress").textContent = userComplaints.filter(c => ["in progress", "in_progress"].includes(c.status?.toLowerCase())).length;
+  document.getElementById("userResolved").textContent = userComplaints.filter(c => c.status?.toLowerCase() === "resolved").length;
+  // Generate achievements badges
+  let badgesHTML = '<div class="badge-box"><div class="badge-icon">💪</div>You are making your community stronger</div>';
+  if(userComplaints.length >= 5){
+    badgesHTML += '<div class="badge-box"><div class="badge-icon">🏆</div>Top Reporter</div>';
   }
-
-  // Fetch user counts & badges
-  async function fetchUserCounts(){
-    try {
-      const { data } = await supabaseClient.from("complaints").select("*").eq("username", userName);
-      const total = data?.length || 0;
-      const inProgress = data?.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length || 0;
-      const resolved = data?.filter(c=>c.status.toLowerCase()==="resolved").length || 0;
-
-      document.getElementById("userTotal").textContent = total;
-      document.getElementById("userInProgress").textContent = inProgress;
-      document.getElementById("userResolved").textContent = resolved;
-
-      // badges
-      let badgesHTML = "";
-      if(total >= 1) badgesHTML += `<div class="badge-box"><div class="badge-icon">💪</div>You are making your community stronger</div>`;
-      if(total >= 5) badgesHTML += `<div class="badge-box"><div class="badge-icon">🏆</div>Top Reporter</div>`;
-      document.getElementById("badgesList").innerHTML = badgesHTML || `<div class="badge-box">No achievements yet</div>`;
-    } catch(e){ console.error(e);}
-  }
-
-  fetchCounts();
-  fetchUserCounts();
-
-  // Logout
-  window.logout = ()=>{
+  document.getElementById("badgesList").innerHTML = badgesHTML;
+  // Logout function available globally
+  window.logout = () => {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("username");
-    window.location.href="index.html";
+    window.location.href = "index.html";
   };
 });
 </script>
-
 </body>
 </html>
