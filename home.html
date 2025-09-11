@@ -1,113 +1,57 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CivicRevolution - Home</title>
-<style>
-body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background:#f2f4f8; color:#2d3748; display:flex; flex-direction:column; min-height:100vh; margin:0; }
-header { background:#0a3d62; padding:1rem 2rem; color:#fff; font-size:1.5rem; font-weight:bold; display:flex; align-items:center; justify-content:space-between; box-shadow:0 3px 6px rgba(0,0,0,0.15);}
-.hero { background:#fff; font-size:x-large; font-weight:bold; padding:2rem; text-align:center; border-radius:12px; margin:1rem 2rem; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
-.hero h2 { color:#0a3d62; margin-bottom:0.5rem;}
-.issue-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:30px; margin:1.5rem 2rem; flex-grow:1;}
-.card { background:#fff; padding:2rem; border-radius:15px; text-align:center; font-size:1.3rem; font-weight:600; border:1px solid #e2e8f0; box-shadow:0 3px 8px rgba(0,0,0,0.1); cursor:pointer; transition:0.25s; display:flex; flex-direction:column; align-items:center; justify-content:center;}
-.card img { width:80px; height:80px; margin-bottom:1rem;}
-.card:hover { transform:scale(1.02); border-color:#0a3d62; background:#f8fafc;}
-.impact, .user-impact, .badges { background:#fff; padding:2rem; border-radius:12px; margin:1rem 2rem 2rem; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-.impact h3, .user-impact h3, .badges h3 { margin-bottom:1rem;}
-.impact h3 { color:#0a3d62;}
-.user-impact h3 { color:#1e3799;}
-.badges h3 { color:#0a3d62;}
-.impact-stats, .badges-list { display:flex; justify-content:space-around; flex-wrap:wrap; gap:1rem; margin-top:1rem;}
-.impact-box, .badge-box { flex:1; min-width:180px; background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #e2e8f0; font-size:1.2rem; font-weight:600; text-align:center;}
-.badge-box { display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:1rem; gap:0.5rem;}
-.badge-icon { font-size:1.5rem;}
-footer { background:#0a3d62; padding:1rem; display:flex; justify-content:space-around; color:#fff;}
-footer button { background:rgba(255,255,255,0.1); border:none; padding:0.8rem 1.4rem; border-radius:8px; color:#fff; font-size:1rem; cursor:pointer; transition:0.2s;}
-footer button:hover { background:rgba(255,255,255,0.25);}
-.count { font-size:24px; margin-top:10px;}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jharkhand Map — Current Location</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* Ensure the map fills the screen */
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #map { height: 100%; width: 100%; }
+  </style>
 </head>
 <body>
-<header>
-  CivicRevolution
-  <span>Empowering Citizens</span>
-</header>
-<div class="hero">
-  <h2><span id="userGreeting"></span> <span id="userName">Guest</span></h2>
-  <p>Report issues, track progress, and make your community stronger 💪</p>
-</div>
-<div class="issue-grid">
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">🚧 Pothole</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">🗑 Garbage</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">💡 Street Light</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">💧 Water Leakage</div>
-  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">⚠ Other</div>
-</div>
-<div class="impact">
-  <h3>🌍 Community Impact</h3>
-  <div class="impact-stats">
-    <div class="impact-box"><div id="totalReports" class="count">0</div><small>Total Reports</small></div>
-    <div class="impact-box"><div id="inProgressReports" class="count">0</div><small>In Progress</small></div>
-    <div class="impact-box"><div id="resolvedReports" class="count">0</div><small>Resolved</small></div>
-  </div>
-</div>
-<div class="user-impact impact">
-  <h3>📝 Your Reports</h3>
-  <div class="impact-stats">
-    <div class="impact-box"><div id="userTotal" class="count">0</div><small>Total Submitted</small></div>
-    <div class="impact-box"><div id="userInProgress" class="count">0</div><small>In Progress</small></div>
-    <div class="impact-box"><div id="userResolved" class="count">0</div><small>Resolved</small></div>
-  </div>
-</div>
-<div class="badges">
-  <h3>🏆 Your Achievements</h3>
-  <div class="badges-list" id="badgesList">
-    <div class="badge-box">No achievements yet</div>
-  </div>
-</div>
-<footer>
-  <button onclick="window.location.href='home.html'">🏠 Home</button>
-  <button onclick="window.location.href='report.html'">📝 Report</button>
-  <button onclick="window.location.href='maps.html'">🗺 Maps</button>
-  <button onclick="logout()">🚪 Logout</button>
-</footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-document.addEventListener("DOMContentLoaded", async () => {
-  const supabase = supabase.createClient(
-    "https://xnqtjcovuqzajuqzaunf.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
-  );
-  if(localStorage.getItem("loggedIn") !== "true") { window.location.href="index.html"; return; }
-  const userName = localStorage.getItem("username") || "Guest";
-  document.getElementById("userName").textContent = userName;
-  const hours = new Date().getHours();
-  let greeting = hours<12?"Good morning":hours<18?"Good afternoon":"Good evening";
-  document.getElementById("userGreeting").textContent = `${greeting},`;
-  // Fetch all complaints for community summary
-  const { data: allComplaints } = await supabase.from("complaints").select("*");
-  document.getElementById("totalReports").textContent = allComplaints.length;
-  document.getElementById("inProgressReports").textContent = allComplaints.filter(c => ["in progress", "in_progress"].includes(c.status?.toLowerCase())).length;
-  document.getElementById("resolvedReports").textContent = allComplaints.filter(c => c.status?.toLowerCase() === "resolved").length;
-  // Fetch user-specific complaints for user stats
-  const { data: userComplaints } = await supabase.from("complaints").select("*").eq("username", userName);
-  document.getElementById("userTotal").textContent = userComplaints.length;
-  document.getElementById("userInProgress").textContent = userComplaints.filter(c => ["in progress", "in_progress"].includes(c.status?.toLowerCase())).length;
-  document.getElementById("userResolved").textContent = userComplaints.filter(c => c.status?.toLowerCase() === "resolved").length;
-  // Generate achievements badges
-  let badgesHTML = '<div class="badge-box"><div class="badge-icon">💪</div>You are making your community stronger</div>';
-  if(userComplaints.length >= 5){
-    badgesHTML += '<div class="badge-box"><div class="badge-icon">🏆</div>Top Reporter</div>';
-  }
-  document.getElementById("badgesList").innerHTML = badgesHTML;
-  // Logout function available globally
-  window.logout = () => {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username");
-    window.location.href = "index.html";
-  };
-});
-</script>
+  <!-- Map container -->
+  <div id="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // Center of Jharkhand
+    const jharkhandCenter = [23.6102, 85.2799];
+    const map = L.map('map').setView(jharkhandCenter, 6);
+
+    // Free OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Marker for Jharkhand center
+    L.marker(jharkhandCenter).addTo(map).bindPopup("Jharkhand (approx center)");
+
+    // Try to get user's current location automatically
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        const acc = pos.coords.accuracy;
+
+        L.marker([lat, lon]).addTo(map).bindPopup("📍 You are here").openPopup();
+        L.circle([lat, lon], { radius: acc }).addTo(map);
+
+        map.setView([lat, lon], 13);
+      },
+      err => {
+        alert("Could not fetch your location: " + err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  </script>
 </body>
 </html>
