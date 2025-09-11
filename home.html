@@ -38,7 +38,7 @@ footer button:hover { background:rgba(255,255,255,0.25);}
 </header>
 
 <div class="hero">
-  <h2><span id="userGreeting"></span> <span id="userName"></span></h2>
+  <h2><span id="userGreeting"></span> <span id="userName">Guest</span></h2>
   <p>Report issues, track progress, and make your community stronger 💪</p>
 </div>
 
@@ -70,10 +70,8 @@ footer button:hover { background:rgba(255,255,255,0.25);}
 
 <div class="badges">
   <h3>🏆 Your Achievements</h3>
-  <div class="badges-list">
-    <div class="badge-box"><div class="badge-icon">🥇</div><div>First Report Submitted</div></div>
-    <div class="badge-box"><div class="badge-icon">🌟</div><div>5 Reports Resolved</div></div>
-    <div class="badge-box"><div class="badge-icon">💪</div><div>Community Champion</div></div>
+  <div class="badges-list" id="badgesList">
+    <div class="badge-box"> <div class="spinner"></div> </div>
   </div>
 </div>
 
@@ -87,49 +85,69 @@ footer button:hover { background:rgba(255,255,255,0.25);}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-  if(localStorage.getItem("loggedIn")!=="true") window.location.href="index.html";
-
-  const userName = localStorage.getItem("username") || "Guest";
-  document.getElementById("userName").textContent = userName;
-
-  const hours = new Date().getHours();
-  let greeting = hours<12?"Good morning":hours<18?"Good afternoon":"Good evening";
-  document.getElementById("userGreeting").textContent = `${greeting},`;
-
   const { createClient } = supabase;
   const supabaseClient = createClient(
     "https://xnqtjcovuqzajuqzaunf.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
   );
 
+  if(localStorage.getItem("loggedIn")!=="true") window.location.href="index.html";
+
+  async function fetchUsername(){
+    const storedUser = localStorage.getItem("username");
+    if(!storedUser) return "Guest";
+    const { data, error } = await supabaseClient.from("registration").select("username").eq("username", storedUser).single();
+    if(error) return storedUser;
+    return data?.username || storedUser;
+  }
+
+  const userName = await fetchUsername();
+  document.getElementById("userName").textContent = userName;
+
+  const hours = new Date().getHours();
+  let greeting = hours<12?"Good morning":hours<18?"Good afternoon":"Good evening";
+  document.getElementById("userGreeting").textContent = `${greeting},`;
+
   function showLoading(){
-    ["totalReports","inProgressReports","resolvedReports","userTotal","userInProgress","userResolved"]
-    .forEach(id=>document.getElementById(id).innerHTML='<div class="spinner"></div>');
+    ["totalReports","inProgressReports","resolvedReports","userTotal","userInProgress","userResolved"].forEach(id=>{
+      document.getElementById(id).innerHTML='<div class="spinner"></div>';
+    });
+    document.getElementById("badgesList").innerHTML='<div class="badge-box"><div class="spinner"></div></div>';
   }
 
   async function fetchCounts(){
     showLoading();
     try {
-      const {data,error} = await supabaseClient.from("complaints").select("*");
+      const { data, error } = await supabaseClient.from("complaints").select("*");
       if(error) throw error;
       document.getElementById("totalReports").textContent = data.length;
-      document.getElementById("inProgressReports").textContent = data.filter(c=>c.status.toLowerCase()==="in progress" || c.status.toLowerCase()==="in_progress").length;
+      document.getElementById("inProgressReports").textContent = data.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length;
       document.getElementById("resolvedReports").textContent = data.filter(c=>c.status.toLowerCase()==="resolved").length;
-    } catch(e){ console.error("Error fetching community reports:",e);}
+    } catch(e){ console.error(e);}
   }
 
   async function fetchUserCounts(){
     try {
-      const {data,error} = await supabaseClient.from("complaints").select("*").eq("username", userName);
+      const { data, error } = await supabaseClient.from("complaints").select("*").eq("username", userName);
       if(error) throw error;
-      document.getElementById("userTotal").textContent = data.length;
-      document.getElementById("userInProgress").textContent = data.filter(c=>c.status.toLowerCase()==="in progress" || c.status.toLowerCase()==="in_progress").length;
-      document.getElementById("userResolved").textContent = data.filter(c=>c.status.toLowerCase()==="resolved").length;
-    } catch(e){ console.error("Error fetching user reports:",e);}
+      const total = data.length;
+      const inProgress = data.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length;
+      const resolved = data.filter(c=>c.status.toLowerCase()==="resolved").length;
+
+      document.getElementById("userTotal").textContent = total;
+      document.getElementById("userInProgress").textContent = inProgress;
+      document.getElementById("userResolved").textContent = resolved;
+
+      // Dynamic badges
+      let badgesHTML = "";
+      if(total >= 1) badgesHTML += `<div class="badge-box"><div class="badge-icon">💪</div>You are making your community stronger</div>`;
+      if(total >= 5) badgesHTML += `<div class="badge-box"><div class="badge-icon">🏆</div>Top Reporter</div>`;
+      document.getElementById("badgesList").innerHTML = badgesHTML || `<div class="badge-box">No achievements yet</div>`;
+
+    } catch(e){ console.error(e);}
   }
 
-  supabaseClient
-    .channel("complaints-realtime")
+  supabaseClient.channel("complaints-realtime")
     .on("postgres_changes",{event:"*",schema:"public",table:"complaints"},()=>{
       fetchCounts(); fetchUserCounts();
     })
