@@ -253,7 +253,7 @@
       (payload) => {
         const ul = document.getElementById('complaint-list');
         const li = document.createElement('li');
-        li.textContent = `${payload.new.issue_type}: ${payload.new.description}`;
+        li.textContent = ${payload.new.issue_type}: ${payload.new.description};
         li.style.padding = '6px 12px';
         li.style.borderBottom = '1px solid #ddd';
         ul.prepend(li);
