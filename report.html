@@ -2,278 +2,353 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Report Issue - CivicRevolution</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", sans-serif;
-      background: #f3f4f6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 2rem;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Issue - CivicRevolution</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
 
-    .report-box {
-      background: #ffffff;
-      padding: 2.5rem;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 650px;
-      min-height: 70vh;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      display: flex;
-      flex-direction: column;
-    }
+        .report-box {
+            background: #ffffff;
+            padding: 2.5rem;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 650px;
+            min-height: 70vh;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
 
-    h1 {
-      text-align: center;
-      color: #1d4ed8;
-      margin-bottom: 2rem;
-      font-size: 2rem;
-    }
+        h1 {
+            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
 
-    label {
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      display: block;
-      color: #374151;
-      font-size: 1rem;
-    }
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+            color: #374151;
+            font-size: 1rem;
+        }
 
-    select,
-    input,
-    textarea {
-      width: 100%;
-      padding: 0.9rem;
-      margin-bottom: 1.2rem;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      font-size: 1rem;
-      background: #f9fafb;
-    }
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.9rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: #f9fafb;
+        }
 
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
 
-    .drop-zone {
-      border: 2px dashed #9ca3af;
-      border-radius: 12px;
-      padding: 1.5rem;
-      text-align: center;
-      color: #6b7280;
-      margin-bottom: 1.2rem;
-      cursor: pointer;
-    }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
 
-    .drop-zone.dragover {
-      background: #e0f2fe;
-      border-color: #0284c7;
-    }
+        button:hover {
+            background: #1d4ed8;
+        }
 
-    .preview-container {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+        #map {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 1.2rem;
+            border-radius: 12px;
+            overflow: hidden;
+        }
 
-    .preview-container img {
-      max-height: 100px;
-      border-radius: 8px;
-    }
+        .loc-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #10b981;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
 
-    #map {
-      height: 200px;
-      margin-bottom: 1rem;
-      border-radius: 12px;
-    }
+        .loc-btn:hover {
+            background: #059669;
+        }
 
-    button {
-      background: #1d4ed8;
-      color: white;
-      border: none;
-      padding: 1rem;
-      border-radius: 12px;
-      font-size: 1.1rem;
-      cursor: pointer;
-    }
+        /* Drag & Drop Box */
+        .drop-zone {
+            border: 2px dashed #9ca3af;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            color: #6b7280;
+            cursor: pointer;
+            margin-bottom: 1.2rem;
+            background: #f9fafb;
+            transition: border-color 0.2s, background 0.2s;
+        }
 
-    button:hover {
-      background: #2563eb;
-    }
-  </style>
+        .drop-zone.dragover {
+            border-color: #3b82f6;
+            background: #e0f2fe;
+            color: #1d4ed8;
+        }
+
+        .preview {
+            margin-top: 0.5rem;
+            max-height: 150px;
+        }
+
+        @media (max-width: 600px) {
+            .report-box {
+                padding: 1.5rem;
+                min-height: auto;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
-  <div class="report-box">
-    <h1>Report an Issue</h1>
-    <form id="reportForm">
-      <label for="issue">Issue Type</label>
-      <select id="issue" required>
-        <option value="">Select an issue</option>
-        <option value="Garbage">Garbage</option>
-        <option value="Water">Water</option>
-        <option value="Road">Road</option>
-        <option value="Electricity">Electricity</option>
-      </select>
+    <div class="report-box">
+        <h1>Report an Issue</h1>
+        <form id="reportForm">
+            <label for="issue">Issue Type</label>
+            <select id="issue" required>
+                <option value="">-- Select --</option>
+                <option>Pothole</option>
+                <option>Garbage</option>
+                <option>Street Light</option>
+                <option>Water Leakage</option>
+                <option>Other</option>
+            </select>
 
-      <label for="desc">Description</label>
-      <textarea id="desc" placeholder="Describe the issue..." required></textarea>
+            <label for="desc">Description</label>
+            <textarea id="desc" placeholder="Explain the issue..." required></textarea>
 
-      <label for="photo">Upload Photos (Max 5)</label>
-      <input type="file" id="photo" accept="image/*" multiple capture="environment" hidden />
-      <div class="drop-zone" id="dropZone">
-        Drag & drop up to 5 photos here or click to open camera/gallery
-        <div id="preview-container" class="preview-container"></div>
-      </div>
+            <label for="photo">Upload Photo</label>
+            <input type="file" id="photo" accept="image/*" hidden />
+            <div class="drop-zone" id="dropZone">
+                Drag & drop photo here or click to select
+                <img id="preview" class="preview" style="display:none;" />
+            </div>
 
-      <label for="location_text">Address</label>
-      <input type="text" id="location_text" placeholder="Enter location manually" required />
+            <label for="location_text">Address or landmark</label>
+            <input type="text" id="location_text" placeholder="Enter location or landmark" required />
 
-      <div id="map"></div>
+            <button type="button" class="loc-btn" id="useLocBtn">📍 Use My Location</button>
+            <div id="map"></div>
 
-      <input type="hidden" id="latitude" />
-      <input type="hidden" id="longitude" />
+            <input type="number" id="latitude" step="any" placeholder="Latitude e.g. 19.0760" />
+            <input type="number" id="longitude" step="any" placeholder="Longitude e.g. 72.8777" />
 
-      <button type="submit">Submit Report</button>
-    </form>
-  </div>
+            <button type="submit">📩 Submit Report</button>
+        </form>
+        <div class="back-btn">
+            <a href="home.html">⬅ Back to Home</a>
+        </div>
+    </div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    // ====== INIT SUPABASE ======
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY";
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    const bucketName = "complaints";
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-    // ====== MAP ======
-    const map = L.map("map").setView([23.6102, 85.2799], 13);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
-    let marker = null;
+        const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'; // replace with your actual anon key
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ====== IMAGE + LOCATION HANDLING ======
-    const fileInput = document.getElementById("photo");
-    const dropZone = document.getElementById("dropZone");
-    const previewContainer = document.getElementById("preview-container");
-    let selectedFiles = [];
+        const bucketName = 'Complaint-Images';
 
-    // Click to open input
-    dropZone.addEventListener("click", () => fileInput.click());
+        // Initialize map
+        let map, marker;
+        function initMap() {
+            map = L.map('map').setView([18.5204, 73.8567], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+            }).addTo(map);
 
-    // File input change
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length) {
-        selectedFiles = Array.from(fileInput.files).slice(0, 5);
-        showPreviews(selectedFiles);
-
-        // Only auto-location if from camera
-        if (fileInput.capture !== undefined && navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              document.getElementById("latitude").value = pos.coords.latitude;
-              document.getElementById("longitude").value = pos.coords.longitude;
-              map.setView([pos.coords.latitude, pos.coords.longitude], 15);
-              if (marker) map.removeLayer(marker);
-              marker = L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map);
-            },
-            (err) => console.log("Location error:", err.message)
-          );
+            map.on('click', (e) => {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                document.getElementById('latitude').value = lat;
+                document.getElementById('longitude').value = lng;
+                if (marker) map.removeLayer(marker);
+                marker = L.marker([lat, lng]).addTo(map);
+            });
         }
-      }
-    });
+        window.addEventListener('load', initMap);
 
-    // Drag & drop
-    dropZone.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      dropZone.classList.add("dragover");
-    });
-    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
-    dropZone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      dropZone.classList.remove("dragover");
-      if (e.dataTransfer.files.length) {
-        selectedFiles = Array.from(e.dataTransfer.files).slice(0, 5);
-        showPreviews(selectedFiles);
-      }
-    });
+        // Geolocation
+        document.getElementById('useLocBtn').onclick = () => {
+            if (!navigator.geolocation) {
+                alert('Geolocation not supported');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lng = pos.coords.longitude;
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lng;
+                    map.setView([lat, lng], 15);
+                    if (marker) map.removeLayer(marker);
+                    marker = L.marker([lat, lng]).addTo(map);
+                },
+                (err) => alert('Location error: ' + err.message)
+            );
+        };
 
-    // Show previews
-    function showPreviews(files) {
-      previewContainer.innerHTML = "";
-      files.forEach(file => {
-        if (file.type.startsWith("image/")) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            previewContainer.appendChild(img);
-          };
-          reader.readAsDataURL(file);
+        // Drag & Drop Photo
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('photo');
+        const preview = document.getElementById('preview');
+        let selectedFile = null;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                selectedFile = fileInput.files[0];
+                showPreview(selectedFile);
+            }
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                selectedFile = e.dataTransfer.files[0];
+                fileInput.files = e.dataTransfer.files; // keep sync
+                showPreview(selectedFile);
+            }
+        });
+
+        function showPreview(file) {
+            if (!file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
         }
-      });
-    }
 
-    // Upload images to Supabase
-    async function uploadImages(files) {
-      const urls = [];
-      for (const file of files) {
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const { error: upErr } = await supabase.storage.from(bucketName).upload(fileName, file);
-        if (!upErr) {
-          const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
-          urls.push(data?.publicUrl ?? null);
+        // Upload to Supabase
+        async function uploadImage(file) {
+            if (!file) return null;
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const { error: upErr } = await supabase.storage
+                .from(bucketName)
+                .upload(fileName, file);
+
+            if (upErr) {
+                console.error('Upload error:', upErr);
+                return null;
+            }
+            const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
+            return data?.publicUrl ?? null;
         }
-      }
-      return urls;
-    }
 
-    // ====== FORM SUBMIT ======
-    document.getElementById("reportForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+        // Helpers
+        function parseNum(v) {
+            if (v === '' || v === null || v === undefined) return null;
+            const n = Number(v);
+            return Number.isFinite(n) ? n : null;
+        }
 
-      const issue = document.getElementById("issue").value.trim();
-      const desc = document.getElementById("desc").value.trim();
-      const location_text = document.getElementById("location_text").value.trim();
-      const lat = parseFloat(document.getElementById("latitude").value) || null;
-      const lng = parseFloat(document.getElementById("longitude").value) || null;
+        // Submit
+        async function submitReport(event) {
+            event.preventDefault();
 
-      if (!issue || !desc || !location_text) {
-        alert("Please fill all required fields");
-        return;
-      }
+            const issue = document.getElementById('issue').value.trim();
+            const desc = document.getElementById('desc').value.trim();
+            const location_text = document.getElementById('location_text').value.trim();
+            const lat = parseNum(document.getElementById('latitude').value);
+            const lng = parseNum(document.getElementById('longitude').value);
 
-      let image_urls = [];
-      if (selectedFiles.length) image_urls = await uploadImages(selectedFiles);
+            if (!issue || !desc || !location_text) {
+                alert('Please fill issue, description and address');
+                return;
+            }
+            if (lat !== null && (lat < -90 || lat > 90)) {
+                alert('Latitude must be between -90 and 90');
+                return;
+            }
+            if (lng !== null && (lng < -180 || lng > 180)) {
+                alert('Longitude must be between -180 and 180');
+                return;
+            }
 
-      const { error } = await supabase.from("complaints").insert([
-        {
-          issue_type: issue,
-          description: desc,
-          image_urls,
-          location_text,
-          latitude: lat,
-          longitude: lng,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+            let image_url = null;
+            if (selectedFile) image_url = await uploadImage(selectedFile);
 
-      if (error) {
-        alert("❌ Failed: " + error.message);
-      } else {
-        alert("✅ Complaint submitted!");
-        window.location.href = "home.html";
-      }
-    });
-  </script>
+            const { error } = await supabase.from('complaints').insert([
+                {
+                    issue_type: issue,
+                    description: desc,
+                    image_url,
+                    location_text,
+                    latitude: lat,
+                    longitude: lng,
+                    created_at: new Date().toISOString(),
+                },
+            ]);
+
+            if (error) {
+                alert('❌ Failed: ' + error.message);
+                return;
+            }
+
+            alert('✅ Complaint submitted!');
+            window.location.href = 'home.html';
+        }
+
+        document
+            .getElementById('reportForm')
+            .addEventListener('submit', submitReport);
+    </script>
 </body>
+
 </html>
