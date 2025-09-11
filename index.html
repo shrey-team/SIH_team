@@ -146,11 +146,15 @@
 
   try {
     // Step 1: Ask Supabase Edge Function to send OTP
-    const response = await fetch("https://<your-project-ref>.functions.supabase.co/send-otp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: phone })
-    });
+    const response = await fetch("https://xnqtjcovuqzajuqzaunf.functions.supabase.co/send-otp", {
+  method: "POST",
+  headers: { 
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${SUPABASE_ANON_KEY}`   // 🔑 add this line
+  },
+  body: JSON.stringify({ phone: phone })
+});
+
 
     const result = await response.json();
 
