@@ -1,185 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CivicRevolution - Home</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f2f4f8;
-      color: #2d3748;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    header {
-      background: #0a3d62;
-      padding: 1rem 2rem;
-      color: #fff;
-      font-size: 1.5rem;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-    }
-
-    .hero {
-      background: #ffffff;
-      font-size: x-large;
-      font-weight: bold;
-      padding: 2rem;
-      text-align: center;
-      border-radius: 12px;
-      margin: 1rem 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .hero h2 {
-      color: #0a3d62;
-      margin-bottom: 0.5rem;
-    }
-
-    .issue-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
-      margin: 1.5rem 2rem;
-      flex-grow: 1;
-    }
-
-    .card {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 15px;
-      text-align: center;
-      font-size: 1.3rem;
-      font-weight: 600;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: 0.25s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card img {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 1rem;
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-      border-color: #0a3d62;
-      background: #f8fafc;
-    }
-
-    .impact, .user-impact, .badges {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 12px;
-      margin: 1rem 2rem 2rem;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .impact h3, .user-impact h3, .badges h3 {
-      margin-bottom: 1rem;
-    }
-
-    /* Distinct colors for dashboards */
-    .impact h3 { color: #0a3d62; }
-    .user-impact h3 { color: #1e3799; }
-    .badges h3 { color: #0a3d62; }
-
-    .impact-stats, .badges-list {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .impact-box, .badge-box {
-      flex: 1;
-      min-width: 180px;
-      background: #f8fafc;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    /* Badge colors */
-    .badge-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      gap: 0.5rem;
-    }
-    .badge-icon {
-      font-size: 1.5rem;
-    }
-
-    footer {
-      background: #0a3d62;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-around;
-      color: #fff;
-    }
-
-    footer button {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      padding: 0.8rem 1.4rem;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    footer button:hover {
-      background: rgba(255,255,255,0.25);
-    }
-
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3b82f6;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      animation: spin 1s linear infinite;
-      margin: auto;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .count {
-      font-size: 24px;
-      margin-top: 10px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CivicRevolution - Home</title>
+<style>
+body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background:#f2f4f8; color:#2d3748; display:flex; flex-direction:column; min-height:100vh; margin:0; }
+header { background:#0a3d62; padding:1rem 2rem; color:#fff; font-size:1.5rem; font-weight:bold; display:flex; align-items:center; justify-content:space-between; box-shadow:0 3px 6px rgba(0,0,0,0.15);}
+.hero { background:#fff; font-size:x-large; font-weight:bold; padding:2rem; text-align:center; border-radius:12px; margin:1rem 2rem; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.hero h2 { color:#0a3d62; margin-bottom:0.5rem;}
+.issue-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:30px; margin:1.5rem 2rem; flex-grow:1;}
+.card { background:#fff; padding:2rem; border-radius:15px; text-align:center; font-size:1.3rem; font-weight:600; border:1px solid #e2e8f0; box-shadow:0 3px 8px rgba(0,0,0,0.1); cursor:pointer; transition:0.25s; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+.card img { width:80px; height:80px; margin-bottom:1rem;}
+.card:hover { transform:scale(1.02); border-color:#0a3d62; background:#f8fafc;}
+.impact, .user-impact, .badges { background:#fff; padding:2rem; border-radius:12px; margin:1rem 2rem 2rem; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.impact h3, .user-impact h3, .badges h3 { margin-bottom:1rem;}
+.impact h3 { color:#0a3d62;}
+.user-impact h3 { color:#1e3799;}
+.badges h3 { color:#0a3d62;}
+.impact-stats, .badges-list { display:flex; justify-content:space-around; flex-wrap:wrap; gap:1rem; margin-top:1rem;}
+.impact-box, .badge-box { flex:1; min-width:180px; background:#f8fafc; padding:1.5rem; border-radius:12px; border:1px solid #e2e8f0; font-size:1.2rem; font-weight:600; text-align:center;}
+.badge-box { display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:1rem; gap:0.5rem;}
+.badge-icon { font-size:1.5rem;}
+footer { background:#0a3d62; padding:1rem; display:flex; justify-content:space-around; color:#fff;}
+footer button { background:rgba(255,255,255,0.1); border:none; padding:0.8rem 1.4rem; border-radius:8px; color:#fff; font-size:1rem; cursor:pointer; transition:0.2s;}
+footer button:hover { background:rgba(255,255,255,0.25);}
+.spinner { border:4px solid #f3f3f3; border-top:4px solid #3b82f6; border-radius:50%; width:24px; height:24px; animation:spin 1s linear infinite; margin:auto;}
+@keyframes spin { 0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);} }
+.count { font-size:24px; margin-top:10px;}
+</style>
 </head>
 <body>
-<script>
-  if (localStorage.getItem("loggedIn") !== "true") {
-    window.location.href = "index.html";
-  }
-</script>
 
 <header>
   CivicRevolution
@@ -192,29 +43,13 @@
 </div>
 
 <div class="issue-grid">
-  <div class="card" onclick="window.location.href='report.html'">
-    <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
-    🚧 Pothole
-  </div>
-  <div class="card" onclick="window.location.href='report.html'">
-    <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
-    🗑 Garbage
-  </div>
-  <div class="card" onclick="window.location.href='report.html'">
-    <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
-    💡 Street Light
-  </div>
-  <div class="card" onclick="window.location.href='report.html'">
-    <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
-    💧 Water Leakage
-  </div>
-  <div class="card" onclick="window.location.href='report.html'">
-    <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
-    ⚠ Other
-  </div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/road.png">🚧 Pothole</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/trash.png">🗑 Garbage</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/street-light.png">💡 Street Light</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/water.png">💧 Water Leakage</div>
+  <div class="card" onclick="window.location.href='report.html'"><img src="https://img.icons8.com/fluency/96/error.png">⚠ Other</div>
 </div>
 
-<!-- Community Impact Dashboard -->
 <div class="impact">
   <h3>🌍 Community Impact</h3>
   <div class="impact-stats">
@@ -224,7 +59,6 @@
   </div>
 </div>
 
-<!-- User Dashboard -->
 <div class="user-impact impact">
   <h3>📝 Your Reports</h3>
   <div class="impact-stats">
@@ -234,22 +68,12 @@
   </div>
 </div>
 
-<!-- Badges Section -->
 <div class="badges">
   <h3>🏆 Your Achievements</h3>
   <div class="badges-list">
-    <div class="badge-box">
-      <div class="badge-icon">🥇</div>
-      <div>First Report Submitted</div>
-    </div>
-    <div class="badge-box">
-      <div class="badge-icon">🌟</div>
-      <div>5 Reports Resolved</div>
-    </div>
-    <div class="badge-box">
-      <div class="badge-icon">💪</div>
-      <div>Community Champion</div>
-    </div>
+    <div class="badge-box"><div class="badge-icon">🥇</div><div>First Report Submitted</div></div>
+    <div class="badge-box"><div class="badge-icon">🌟</div><div>5 Reports Resolved</div></div>
+    <div class="badge-box"><div class="badge-icon">💪</div><div>Community Champion</div></div>
   </div>
 </div>
 
@@ -262,60 +86,65 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  function logout() {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username");
-    window.location.href = "index.html";
-  }
+document.addEventListener("DOMContentLoaded", async () => {
+  if(localStorage.getItem("loggedIn")!=="true") window.location.href="index.html";
 
-  // Personalized Greeting
   const userName = localStorage.getItem("username") || "Guest";
-  const hours = new Date().getHours();
-  let greeting = "Hello";
-  if (hours < 12) greeting = "Good morning";
-  else if (hours < 18) greeting = "Good afternoon";
-  else greeting = "Good evening";
-
   document.getElementById("userName").textContent = userName;
-  document.getElementById("userGreeting").textContent = greeting;
+
+  const hours = new Date().getHours();
+  let greeting = hours<12?"Good morning":hours<18?"Good afternoon":"Good evening";
+  document.getElementById("userGreeting").textContent = `${greeting},`;
 
   const { createClient } = supabase;
   const supabaseClient = createClient(
     "https://xnqtjcovuqzajuqzaunf.supabase.co",
-    "YOUR_SUPABASE_KEY_HERE"
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
   );
 
-  function showLoading() {
+  function showLoading(){
     ["totalReports","inProgressReports","resolvedReports","userTotal","userInProgress","userResolved"]
-      .forEach(id => document.getElementById(id).innerHTML = '<div class="spinner"></div>');
+    .forEach(id=>document.getElementById(id).innerHTML='<div class="spinner"></div>');
   }
 
-  async function fetchCounts() {
+  async function fetchCounts(){
     showLoading();
-    const { data, error } = await supabaseClient.from("complaints").select("*");
-    if(error) { console.error(error); return; }
-
-    document.getElementById("totalReports").textContent = data.length;
-    document.getElementById("inProgressReports").textContent = data.filter(c => c.status === "In Progress" || c.status === "in_progress").length;
-    document.getElementById("resolvedReports").textContent = data.filter(c => c.status === "Resolved" || c.status === "resolved").length;
+    try {
+      const {data,error} = await supabaseClient.from("complaints").select("*");
+      if(error) throw error;
+      document.getElementById("totalReports").textContent = data.length;
+      document.getElementById("inProgressReports").textContent = data.filter(c=>c.status.toLowerCase()==="in progress" || c.status.toLowerCase()==="in_progress").length;
+      document.getElementById("resolvedReports").textContent = data.filter(c=>c.status.toLowerCase()==="resolved").length;
+    } catch(e){ console.error("Error fetching community reports:",e);}
   }
 
-  async function fetchUserCounts() {
-    const { data, error } = await supabaseClient.from("complaints").select("*").eq("username", userName);
-    if(error) { console.error(error); return; }
-
-    document.getElementById("userTotal").textContent = data.length;
-    document.getElementById("userInProgress").textContent = data.filter(c => c.status === "In Progress" || c.status === "in_progress").length;
-    document.getElementById("userResolved").textContent = data.filter(c => c.status === "Resolved" || c.status === "resolved").length;
+  async function fetchUserCounts(){
+    try {
+      const {data,error} = await supabaseClient.from("complaints").select("*").eq("username", userName);
+      if(error) throw error;
+      document.getElementById("userTotal").textContent = data.length;
+      document.getElementById("userInProgress").textContent = data.filter(c=>c.status.toLowerCase()==="in progress" || c.status.toLowerCase()==="in_progress").length;
+      document.getElementById("userResolved").textContent = data.filter(c=>c.status.toLowerCase()==="resolved").length;
+    } catch(e){ console.error("Error fetching user reports:",e);}
   }
 
   supabaseClient
     .channel("complaints-realtime")
-    .on("postgres_changes", { event: "*", schema: "public", table: "complaints" }, () => { fetchCounts(); fetchUserCounts(); })
+    .on("postgres_changes",{event:"*",schema:"public",table:"complaints"},()=>{
+      fetchCounts(); fetchUserCounts();
+    })
     .subscribe();
 
   fetchCounts();
   fetchUserCounts();
+
+  window.logout = ()=>{
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("username");
+    window.location.href="index.html";
+  };
+});
 </script>
+
 </body>
 </html>
