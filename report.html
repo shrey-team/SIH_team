@@ -202,7 +202,7 @@
         function initMap() {
             map = L.map('map').setView([18.5204, 73.8567], 12);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
+                attribution: '©️ OpenStreetMap contributors',
             }).addTo(map);
 
             map.on('click', (e) => {
@@ -312,7 +312,7 @@
         // ✅ Reverse geocode to fill address and pincode
         async function reverseGeocode(lat, lng) {
             try {
-                const res = await fetch(https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng});
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
                 const data = await res.json();
                 if (data && data.display_name) {
                     document.getElementById('location_text').value = data.display_name || '';
@@ -328,7 +328,7 @@
             if (!files || files.length === 0) return [];
             const uploadedUrls = [];
             for (const file of files) {
-                const fileName = ${Date.now()}_${file.name};
+                const fileName = `${Date.now()}_${file.name}`;
                 const { error: upErr } = await supabase.storage
                     .from(bucketName)
                     .upload(fileName, file);
