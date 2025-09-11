@@ -123,9 +123,10 @@
             color: #1d4ed8;
         }
 
-        .preview {
-            margin-top: 0.5rem;
+        .preview img {
             max-height: 150px;
+            margin: 5px;
+            border-radius: 8px;
         }
 
         @media (max-width: 600px) {
@@ -158,11 +159,11 @@
             <label for="desc">Description</label>
             <textarea id="desc" placeholder="Explain the issue..." required></textarea>
 
-            <label for="photo">Upload Photo</label>
-            <input type="file" id="photo" accept="image/*" hidden />
+            <label for="photo">Upload Photos (multiple)</label>
+            <input type="file" id="photo" accept="image/*" hidden multiple capture="environment" />
             <div class="drop-zone" id="dropZone">
-                Drag & drop photo here or click to select
-                <img id="preview" class="preview" style="display:none;" />
+                Drag & drop photos here or click to select
+                <div id="previewContainer" class="preview"></div>
             </div>
 
             <label for="location_text">Address or landmark</label>
@@ -182,11 +183,12 @@
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
         const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'; // replace with your actual anon key
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM';
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const bucketName = 'Complaint-Images';
@@ -230,18 +232,19 @@
             );
         };
 
-        // Drag & Drop Photo
+        // Drag & Drop Photo for multiple files
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('photo');
-        const preview = document.getElementById('preview');
-        let selectedFile = null;
+        const previewContainer = document.getElementById('previewContainer');
+        let selectedFiles = [];
 
         dropZone.addEventListener('click', () => fileInput.click());
 
         fileInput.addEventListener('change', () => {
             if (fileInput.files.length) {
-                selectedFile = fileInput.files[0];
-                showPreview(selectedFile);
+                selectedFiles = Array.from(fileInput.files);
+                showPreviews(selectedFiles);
+                extractGPS(selectedFiles[0]); // auto-fill GPS from first photo
             }
         });
 
@@ -258,37 +261,65 @@
             e.preventDefault();
             dropZone.classList.remove('dragover');
             if (e.dataTransfer.files.length) {
-                selectedFile = e.dataTransfer.files[0];
+                selectedFiles = Array.from(e.dataTransfer.files);
                 fileInput.files = e.dataTransfer.files; // keep sync
-                showPreview(selectedFile);
+                showPreviews(selectedFiles);
+                extractGPS(selectedFiles[0]); // auto-fill GPS from first photo
             }
         });
 
-        function showPreview(file) {
-            if (!file.type.startsWith('image/')) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+        function showPreviews(files) {
+            previewContainer.innerHTML = '';
+            files.forEach(file => {
+                if (!file.type.startsWith('image/')) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
-        // Upload to Supabase
-        async function uploadImage(file) {
-            if (!file) return null;
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}.${fileExt}`;
-            const { error: upErr } = await supabase.storage
-                .from(bucketName)
-                .upload(fileName, file);
+        // Extract GPS from first image using EXIF
+        function extractGPS(file) {
+            EXIF.getData(file, function () {
+                const lat = EXIF.getTag(this, "GPSLatitude");
+                const lng = EXIF.getTag(this, "GPSLongitude");
+                const latRef = EXIF.getTag(this, "GPSLatitudeRef") || "N";
+                const lngRef = EXIF.getTag(this, "GPSLongitudeRef") || "E";
 
-            if (upErr) {
-                console.error('Upload error:', upErr);
-                return null;
+                if (lat && lng) {
+                    const latitude = (lat[0] + lat[1] / 60 + lat[2] / 3600) * (latRef === "N" ? 1 : -1);
+                    const longitude = (lng[0] + lng[1] / 60 + lng[2] / 3600) * (lngRef === "E" ? 1 : -1);
+                    document.getElementById('latitude').value = latitude;
+                    document.getElementById('longitude').value = longitude;
+                    map.setView([latitude, longitude], 15);
+                    if (marker) map.removeLayer(marker);
+                    marker = L.marker([latitude, longitude]).addTo(map);
+                }
+            });
+        }
+
+        // Upload multiple images
+        async function uploadImages(files) {
+            if (!files || files.length === 0) return [];
+            const uploadedUrls = [];
+            for (const file of files) {
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${Date.now()}_${file.name}`;
+                const { error: upErr } = await supabase.storage
+                    .from(bucketName)
+                    .upload(fileName, file);
+                if (upErr) {
+                    console.error('Upload error:', upErr);
+                    continue;
+                }
+                const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
+                uploadedUrls.push(data?.publicUrl ?? null);
             }
-            const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
-            return data?.publicUrl ?? null;
+            return uploadedUrls;
         }
 
         // Helpers
@@ -321,14 +352,14 @@
                 return;
             }
 
-            let image_url = null;
-            if (selectedFile) image_url = await uploadImage(selectedFile);
+            let image_urls = [];
+            if (selectedFiles.length > 0) image_urls = await uploadImages(selectedFiles);
 
             const { error } = await supabase.from('complaints').insert([
                 {
                     issue_type: issue,
                     description: desc,
-                    image_url,
+                    image_urls, // store array of image URLs
                     location_text,
                     latitude: lat,
                     longitude: lng,
