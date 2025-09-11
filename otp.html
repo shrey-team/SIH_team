@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,36 +8,47 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #2c8ef4, #14cba8);
-      height: 100vh;
+      background: #f3f4f6;
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100vh;
     }
-    .box {
+
+    .otp-box {
       background: white;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      width: 320px;
       text-align: center;
-      width: 300px;
     }
-    input, button {
+
+    input {
       width: 100%;
       padding: 0.8rem;
-      margin: 0.5rem 0;
+      margin: 0.6rem 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
       font-size: 1rem;
     }
+
     button {
+      width: 100%;
+      padding: 0.9rem;
       background: #2563eb;
       color: white;
       border: none;
       border-radius: 8px;
+      font-size: 1rem;
       cursor: pointer;
+      margin-top: 0.5rem;
     }
+
     button:hover {
       background: #1e4ed8;
     }
+
     p {
       color: red;
       font-size: 0.9rem;
@@ -44,77 +56,87 @@
     }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h2>Verify OTP</h2>
-    <p>We sent an OTP to your phone</p>
-    <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" />
-    <button id="verifyBtn">Verify</button>
-    <p id="otpError">❌ Invalid OTP. Try again.</p>
+  <div class="otp-box">
+    <h2>Enter OTP</h2>
+    <input type="text" id="otp" placeholder="Enter OTP" maxlength="6" />
+    <button id="verifyBtn">Verify & Register</button>
+    <p id="otpError">⚠ Invalid OTP</p>
   </div>
 
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
     const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co'
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_KEY'
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    // Get registration data from URL params
-    const params = new URLSearchParams(window.location.search)
-    const username = params.get("username")
-    const password = params.get("password")
-    const aadhaar = params.get("aadhaar")
-    const phone = params.get("phone")
+    // Extract query params
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get("username");
+    const password = urlParams.get("password");
+    const aadhaar = urlParams.get("aadhaar");
+    const phone = urlParams.get("phone");
 
-    document.getElementById("verifyBtn").onclick = async () => {
-      const enteredOtp = document.getElementById("otpInput").value.trim()
-      const otpError = document.getElementById("otpError")
-      otpError.style.display = "none"
+    async function saveUser() {
+      const otp = document.getElementById("otp").value.trim();
 
-      // Validate OTP format
-      if (!/^\d{6}$/.test(enteredOtp)) {
-        otpError.innerText = "❌ OTP must be 6 digits."
-        otpError.style.display = "block"
-        return
+      if (!otp || otp.length !== 6) {
+        document.getElementById("otpError").innerText = "⚠ Enter valid OTP.";
+        document.getElementById("otpError").style.display = "block";
+        return;
       }
 
       try {
-        // Verify OTP via Supabase Edge Function
+        // Step 1: Verify OTP with your Supabase Edge Function
         const response = await fetch("https://xnqtjcovuqzajuqzaunf.functions.supabase.co/verify-otp", {
           method: "POST",
-          headers: { 
+          headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + SUPABASE_ANON_KEY
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
           },
-          body: JSON.stringify({ phone: phone, otp: enteredOtp })
-        })
+          body: JSON.stringify({ phone, otp })
+        });
 
-        const result = await response.json()
-
-        if (result.success) {
-          // Save user to Supabase registrations table
-          const { error } = await supabase.from("registrations").insert([
-            { username, password, aadhaar, phone }
-          ])
-
-          if (!error) {
-            alert("🎉 Registration complete! You can now login.")
-            window.location.href = "index.html"
-          } else {
-            console.error(error)
-            alert("⚠ Error saving user.")
-          }
-        } else {
-          otpError.innerText = "❌ Invalid OTP. Try again."
-          otpError.style.display = "block"
+        const result = await response.json();
+        if (!result.success) {
+          document.getElementById("otpError").innerText = "⚠ Invalid OTP.";
+          document.getElementById("otpError").style.display = "block";
+          return;
         }
+
+        // Step 2: Insert into Supabase with unique constraint handling
+        const { data, error } = await supabase
+          .from("registrations")
+          .insert([{ username, password, aadhaar, phone }]);
+
+        if (error) {
+          if (error.code === "23505") {
+            if (error.message.includes("aadhaar")) {
+              alert("⚠ Aadhaar already registered.");
+            } else if (error.message.includes("phone")) {
+              alert("⚠ Phone already registered.");
+            } else {
+              alert("⚠ Duplicate entry.");
+            }
+          } else {
+            alert("⚠ Registration failed: " + error.message);
+          }
+          return;
+        }
+
+        // ✅ Success
+        alert("✅ Registration successful!");
+        window.location.href = "home.html";
+
       } catch (err) {
-        console.error(err)
-        otpError.innerText = "⚠ Something went wrong. Try again."
-        otpError.style.display = "block"
+        console.error(err);
+        alert("⚠ Something went wrong.");
       }
     }
+
+    document.getElementById("verifyBtn").onclick = saveUser;
   </script>
 </body>
+
 </html>
