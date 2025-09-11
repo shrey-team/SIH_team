@@ -1,279 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CivicRevolution - Home</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f2f4f8;
-      color: #2d3748;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      margin: 0;
+<!-- ✅ Supabase Client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const { createClient } = supabase;
+
+  // 🔑 Your Supabase Project URL & Public Anon Key
+  const supabaseClient = createClient(
+    "https://xnqtjcovuqzajuqzaunf.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
+  );
+
+  // ✅ Function to fetch counts
+  async function fetchCounts() {
+    const { data, error } = await supabaseClient.from("complaints").select("*");
+    if (error) {
+      console.error("Error fetching complaints:", error);
+      return;
     }
 
-    header {
-      background: #0a3d62;
-      padding: 1rem 2rem;
-      color: #fff;
-      font-size: xx-large;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    // Adjust these based on your actual column values
+    let totalReports = data.length;
+    let inProgress = data.filter(c => c.status === "In Progress" || c.status === "in_progress").length;
+    let resolved = data.filter(c => c.status === "Resolved" || c.status === "resolved").length;
+
+    // Update UI
+    document.getElementById("totalReports").textContent = totalReports;
+    document.getElementById("inProgressReports").textContent = inProgress;
+    document.getElementById("resolvedReports").textContent = resolved;
+
+    // Update Chart.js
+    if (window.impactChart) {
+      window.impactChart.data.datasets[0].data = [inProgress, resolved];
+      window.impactChart.update();
     }
+  }
 
-    .hero {
-      background: #ffffff;
-      font-size: x-large;
-      font-weight: bold;
-      padding: 2rem;
-      text-align: center;
-      border-radius: 12px;
-      margin: 1rem 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .hero h2 {
-      color: #0a3d62;
-      margin-bottom: 0.5rem;
-    }
-
-    .issue-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
-      margin: 1.5rem 2rem;
-      flex-grow: 1;
-    }
-
-    .card {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 15px;
-      text-align: center;
-      font-size: 1.3rem;
-      font-weight: 600;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: 0.25s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card img {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 1rem;
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-      border-color: #0a3d62;
-      background: #f8fafc;
-    }
-
-    .impact {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 12px;
-      margin: 1rem 2rem 2rem;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .impact h3 {
-      color: #0a3d62;
-      margin-bottom: 1rem;
-    }
-
-    .impact-stats {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .impact-box {
-      flex: 1;
-      min-width: 200px;
-      background: #f8fafc;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    canvas {
-      max-width: 600px;
-      margin: 2rem auto;
-    }
-
-    footer {
-      background: #0a3d62;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-around;
-      color: #fff;
-    }
-
-    footer button {
-      background: rgba(255,255,255,0.1);
-      border: none;
-      padding: 0.8rem 1.4rem;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    footer button:hover {
-      background: rgba(255,255,255,0.25);
-    }
-  </style>
-</head>
-<body>
-  <script>
-    if (localStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "index.html";
-    }
-  </script>
-
-  <header>
-    CivicRevolution
-    <span>Empowering Citizens</span>
-  </header>
-
-  <div class="hero">
-    <h2>Welcome👋 <span id="userName"></span></h2>
-    <p>Report issues, track progress, and make your community stronger 💪</p>
-  </div>
-
-  <div class="issue-grid">
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole" />
-      🚧 Pothole
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage" />
-      🗑 Garbage
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light" />
-      💡 Street Light
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage" />
-      💧 Water Leakage
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues" />
-      ⚠ Other
-    </div>
-  </div>
-
-  <!-- 🌍 Real-time Community Impact Dashboard -->
-  <div class="impact">
-    <h3>🌍 Community Impact (Real-Time)</h3>
-    <div class="impact-stats">
-      <div class="impact-box">📌 <span id="totalReports">0</span><br /><small>Total Reports</small></div>
-      <div class="impact-box">⏳ <span id="inProgress">0</span><br /><small>In Progress</small></div>
-      <div class="impact-box">✅ <span id="resolved">0</span><br /><small>Resolved</small></div>
-    </div>
-    <canvas id="impactChart"></canvas>
-  </div>
-
-  <footer>
-    <button onclick="window.location.href='home.html'">🏠 Home</button>
-    <button onclick="window.location.href='report.html'">📝 Report</button>
-    <button onclick="window.location.href='maps.html'">🗺 Maps</button>
-    <button onclick="logout()">🚪 Logout</button>
-  </footer>
-
-  <script>
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      localStorage.removeItem("username");
-      window.location.href = "index.html";
-    }
-
-    const userName = localStorage.getItem("username") || "Guest";
-    document.getElementById("userName").textContent = userName;
-  </script>
-
-  <!-- ✅ Supabase + Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const { createClient } = supabase;
-    const supabaseClient = createClient(
-      'https://xnqtjcovuqzajuqzaunf.supabase.co',
-      'YOUR_PUBLIC_ANON_KEY' // ⚠ Replace with your Supabase anon key
-    );
-
-    // Setup Chart.js
-    const ctx = document.getElementById("impactChart").getContext("2d");
-    const impactChart = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["In Progress", "Resolved"],
-        datasets: [{
-          label: "Complaints Status",
-          data: [0, 0],
-          backgroundColor: ["#f39c12", "#27ae60"],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: "bottom"
-          }
-        }
+  // ✅ Subscribe to real-time changes
+  supabaseClient
+    .channel("complaints-realtime")
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "complaints" },
+      payload => {
+        console.log("Realtime update:", payload);
+        fetchCounts();
       }
-    });
+    )
+    .subscribe();
 
-    async function fetchStats() {
-      const { data, error } = await supabaseClient.from("complaints").select("status");
-      if (error) {
-        console.error(error);
-        return;
-      }
-
-      let total = data.length;
-      let inProgress = data.filter(c => c.status === "in_progress").length;
-      let resolved = data.filter(c => c.status === "resolved").length;
-
-      document.getElementById("totalReports").textContent = total;
-      document.getElementById("inProgress").textContent = inProgress;
-      document.getElementById("resolved").textContent = resolved;
-
-      // Update chart
-      impactChart.data.datasets[0].data = [inProgress, resolved];
-      impactChart.update();
-    }
-
-    // Initial fetch
-    fetchStats();
-
-    // Subscribe to real-time updates
-    supabaseClient.channel("complaints-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "complaints" }, (payload) => {
-        console.log("Change received!", payload);
-        fetchStats();
-      })
-      .subscribe();
-  </script>
-</body>
-</html>
+  // Initial fetch
+  fetchCounts();
+</script>
