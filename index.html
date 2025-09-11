@@ -14,14 +14,29 @@
       align-items: center;
       justify-content: center;
     }
-    .auth-container { background:#fff; width:90%; max-width:420px; padding:2rem; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.2); }
-    h1 { text-align:center; margin-bottom:1rem; color:#2563eb; }
-    input { width:100%; padding:0.9rem; margin:0.6rem 0; border:1px solid #ccc; border-radius:10px; font-size:1rem; }
-    button { width:100%; padding:0.9rem; background:#2563eb; color:white; border:none; border-radius:10px; font-size:1.1rem; cursor:pointer; margin-top:0.5rem; transition:0.3s; }
-    button:hover { background:#1e4ed8; }
-    .switch-auth { text-align:center; margin-top:1rem; font-size:0.95rem; }
-    .switch-auth span { color:#2563eb; cursor:pointer; font-weight:bold; }
-    .hidden { display:none; }
+    .auth-container {
+      background: #fff;
+      width: 90%;
+      max-width: 420px;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    h1 { text-align: center; margin-bottom: 1rem; color: #2563eb; }
+    input {
+      width: 100%; padding: 0.9rem; margin: 0.6rem 0;
+      border: 1px solid #ccc; border-radius: 10px; font-size: 1rem;
+    }
+    button {
+      width: 100%; padding: 0.9rem; background: #2563eb;
+      color: white; border: none; border-radius: 10px;
+      font-size: 1.1rem; cursor: pointer; margin-top: 0.5rem;
+      transition: 0.3s;
+    }
+    button:hover { background: #1e4ed8; }
+    .switch-auth { text-align: center; margin-top: 1rem; font-size: 0.95rem; }
+    .switch-auth span { color: #2563eb; cursor: pointer; font-weight: bold; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -49,6 +64,7 @@
 
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
     const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co'
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -71,27 +87,103 @@
       const pass = document.getElementById("regPassword").value.trim();
       const aadhaar = document.getElementById("regAadhaar").value.trim();
       const phone = document.getElementById("regPhone").value.trim();
-      if (!user || !pass || !aadhaar || !phone) { document.getElementById("registerError").innerText = "⚠ All fields are required."; document.getElementById("registerError").style.display = "block"; return; }
-      if (!/^\d{12}$/.test(aadhaar)) { document.getElementById("registerError").innerText = "⚠ Aadhaar must be 12 digits."; document.getElementById("registerError").style.display = "block"; return; }
-      if (!/^\d{10}$/.test(phone)) { document.getElementById("registerError").innerText = "⚠ Phone number must be 10 digits."; document.getElementById("registerError").style.display = "block"; return; }
+
+      if (!user || !pass || !aadhaar || !phone) {
+        document.getElementById("registerError").innerText = "⚠ All fields are required.";
+        document.getElementById("registerError").style.display = "block";
+        return;
+      }
+      if (!/^\d{12}$/.test(aadhaar)) {
+        document.getElementById("registerError").innerText = "⚠ Aadhaar must be 12 digits.";
+        document.getElementById("registerError").style.display = "block";
+        return;
+      }
+      if (!/^\d{10}$/.test(phone)) {
+        document.getElementById("registerError").innerText = "⚠ Phone number must be 10 digits.";
+        document.getElementById("registerError").style.display = "block";
+        return;
+      }
 
       try {
-        const {  existing } = await supabase.from('registrations').select('username').eq('username', user);
-        if (existing && existing.length > 0) { document.getElementById("registerError").innerText = "⚠ Username already registered."; document.getElementById("registerError").style.display = "block"; return; }
-        const { error } = await supabase.from('registrations').insert([{ username: user, password: pass, aadhar: aadhaar, phone: phone }]);
-        if (error) throw error;
-        alert("✅ Registration Successful! Please login.");
-        showLogin();
-      } catch (error) { document.getElementById("registerError").innerText = "⚠ Registration failed. Try again."; document.getElementById("registerError").style.display = "block"; console.error(error); }
+        // ✅ Check Aadhaar unique
+        const { data: aadhaarExists } = await supabase
+          .from("registrations")
+          .select("id")
+          .eq("aadhaar", aadhaar)
+          .maybeSingle();
+        if (aadhaarExists) {
+          document.getElementById("registerError").innerText = "⚠ Aadhaar already registered.";
+          document.getElementById("registerError").style.display = "block";
+          return;
+        }
+
+        // ✅ Check Phone unique
+        const { data: phoneExists } = await supabase
+          .from("registrations")
+          .select("id")
+          .eq("phone", phone)
+          .maybeSingle();
+        if (phoneExists) {
+          document.getElementById("registerError").innerText = "⚠ Phone number already registered.";
+          document.getElementById("registerError").style.display = "block";
+          return;
+        }
+
+        // ✅ Send OTP
+        const response = await fetch(`${SUPABASE_URL.replace(".co", ".functions.supabase.co")}/send-otp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+          },
+          body: JSON.stringify({ phone })
+        });
+
+        console.log("OTP Response:", response);
+
+        if (!response.ok) {
+          throw new Error("Failed to call OTP function. HTTP " + response.status);
+        }
+
+        const result = await response.json();
+        console.log("OTP Result:", result);
+
+        if (result.success) {
+          alert("✅ OTP sent! Please verify.");
+          window.location.href =
+            `otp.html?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&aadhaar=${encodeURIComponent(aadhaar)}&phone=${encodeURIComponent(phone)}`;
+        } else {
+          document.getElementById("registerError").innerText = "⚠ Failed to send OTP.";
+          document.getElementById("registerError").style.display = "block";
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        document.getElementById("registerError").innerText = "⚠ " + error.message;
+        document.getElementById("registerError").style.display = "block";
+      }
     }
 
     async function login() {
       const user = document.getElementById("loginUsername").value.trim();
       const pass = document.getElementById("loginPassword").value.trim();
-      const { data, error } = await supabase.from('registrations').select('*').eq('username', user).eq('password', pass);
-      if (error) { document.getElementById("loginError").innerText = "❌ Error reading database."; document.getElementById("loginError").style.display = "block"; return; }
-      if (data && data.length > 0) { localStorage.setItem("loggedIn","true"); window.location.href="home.html"; }
-      else { document.getElementById("loginError").innerText = "❌ Invalid username or password."; document.getElementById("loginError").style.display = "block"; }
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('*')
+        .eq('username', user)
+        .eq('password', pass);
+
+      if (error) {
+        document.getElementById("loginError").innerText = "❌ Error reading database.";
+        document.getElementById("loginError").style.display = "block";
+        return;
+      }
+      if (data && data.length > 0) {
+        localStorage.setItem("loggedIn", "true");
+        window.location.href = "home.html";
+      } else {
+        document.getElementById("loginError").innerText = "❌ Invalid username or password.";
+        document.getElementById("loginError").style.display = "block";
+      }
     }
 
     document.getElementById("registerSwitch").onclick = showRegister;
