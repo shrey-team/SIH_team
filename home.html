@@ -27,6 +27,22 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.15);
     }
 
+    .profile-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-right: 1rem;
+    }
+
+    .profile-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
     .hero {
       background: #ffffff;
       font-size: x-large;
@@ -114,11 +130,6 @@
       font-weight: 600;
     }
 
-    header {
-        font-size: xx-large;
-        font-weight: 900;
-    }
-
     footer {
       background: #0a3d62;
       padding: 1rem;
@@ -141,55 +152,118 @@
     footer button:hover {
       background: rgba(255,255,255,0.25);
     }
+
+    /* Profile Panel */
+    #profilePanel {
+      display: none;
+      margin: 1rem 2rem;
+    }
+
+    .section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .section h2 {
+      color: #0a3d62;
+      margin-bottom: 1rem;
+    }
+
+    .box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 0.8rem;
+    }
   </style>
 </head>
 <body>
 <script>
   if (localStorage.getItem("loggedIn") !== "true") {
-    // If not logged in, redirect to login page
     window.location.href = "index.html";
   }
 </script>
 
   <header>
-    CivicRevolution
+    <div style="display:flex;align-items:center;">
+      <button class="profile-btn" onclick="toggleProfile()">👤 Profile</button>
+      CivicRevolution
+    </div>
     <span>Empowering Citizens</span>
   </header>
 
-  <div class="hero">
-    <h2>Welcome👋 <span id="userName"></span></h2>
-    <p>Report issues, track progress, and make your community stronger 💪</p>
+  <div id="homeContent">
+    <div class="hero">
+      <h2>Welcome👋 <span id="userName"></span></h2>
+      <p>Report issues, track progress, and make your community stronger 💪</p>
+    </div>
+
+    <div class="issue-grid">
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
+        🚧 Pothole
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
+        🗑 Garbage
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
+        💡 Street Light
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
+        💧 Water Leakage
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
+        ⚠ Other
+      </div>
+    </div>
+
+    <div class="impact">
+      <h3>🌍 Community Impact</h3>
+      <div class="impact-stats">
+        <div class="impact-box">📌 23<br><small>Total Reports</small></div>
+        <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
+        <div class="impact-box">✅ 18<br><small>Resolved</small></div>
+      </div>
+    </div>
   </div>
 
-  <div class="issue-grid">
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
-      🚧 Pothole
+  <!-- Profile / Dashboard Panel -->
+  <div id="profilePanel">
+    <div class="section">
+      <h2>👤 Profile</h2>
+      <div class="box">Username: <span id="profileName"></span></div>
+      <div class="box">Email: <span id="profileEmail">user@example.com</span></div>
+      <div class="box">Join Date: <span id="profileJoin">2025-01-01</span></div>
     </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
-      🗑 Garbage
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
-      💡 Street Light
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
-      💧 Water Leakage
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
-      ⚠ Other
-    </div>
-  </div>
 
-  <div class="impact">
-    <h3>🌍 Community Impact</h3>
-    <div class="impact-stats">
-      <div class="impact-box">📌 23<br><small>Total Reports</small></div>
-      <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
-      <div class="impact-box">✅ 18<br><small>Resolved</small></div>
+    <div class="section">
+      <h2>📝 My Reports</h2>
+      <div class="box">Report list will come here…</div>
+    </div>
+
+    <div class="section">
+      <h2>📌 Report Statistics</h2>
+      <div class="box">📌 Total: 3 | ⏳ Pending: 1 | 🔧 In Progress: 1 | ✅ Resolved: 1</div>
+    </div>
+
+    <div class="section">
+      <h2>🔔 Notifications</h2>
+      <div class="box">✅ Example: Street light fixed.</div>
+    </div>
+
+    <div class="section">
+      <h2>⚙ Settings</h2>
+      <div class="box">🔑 Change Password</div>
+      <div class="box">🔔 Notification Preferences</div>
+      <button onclick="logout()">🚪 Logout</button>
     </div>
   </div>
 
@@ -201,17 +275,42 @@
   </footer>
 
   <script>
-  // Logout function
   function logout() {
     localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username"); // ✅ also remove username
+    localStorage.removeItem("username");
     window.location.href = "index.html";
   }
 
-  // Show user details
   const userName = localStorage.getItem("username") || "Guest";
   document.getElementById("userName").textContent = userName;
-</script>
+  document.getElementById("profileName").textContent = userName;
+
+  function toggleProfile() {
+    const home = document.getElementById("homeContent");
+    const profile = document.getElementById("profilePanel");
+    if (profile.style.display === "none" || profile.style.display === "") {
+      profile.style.display = "block";
+      home.style.display = "none";
+    } else {
+      profile.style.display = "none";
+      home.style.display = "block";
+    }
+  }
+    // ✅ Close profile panel when clicking outside
+  document.addEventListener("click", function(e) {
+    const profile = document.getElementById("profilePanel");
+    const home = document.getElementById("homeContent");
+    const profileBtn = document.querySelector(".profile-btn");
+
+    if (profile && profile.style.display === "block") {
+      if (!profile.contains(e.target) && !profileBtn.contains(e.target)) {
+        profile.style.display = "none";
+        home.style.display = "block";
+      }
+    }
+  });
+
+  </script>
 
 </body>
 </html>
