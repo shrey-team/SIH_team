@@ -134,10 +134,23 @@
             try {
                 const { existing } = await supabase.from('registrations').select('username').eq('username', user);
                 if (existing && existing.length > 0) { document.getElementById("registerError").innerText = "⚠ Username already registered."; document.getElementById("registerError").style.display = "block"; return; }
-                const { error } = await supabase.from('registrations').insert([{ username: user, password: pass, aadhar: aadhaar, phone: phone }]);
-                if (error) throw error;
-                alert("✅ Registration Successful! Please login.");
-                showLogin();
+                // Call Supabase Edge Function to send OTP
+const response = await fetch("https://<your-project-ref>.functions.supabase.co/send-otp", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ phone: phone })
+});
+
+const result = await response.json();
+if (result.success) {
+  alert("✅ OTP sent! Please verify.");
+  // Redirect to otp.html and carry registration data
+  window.location.href = `otp.html?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}&aadhaar=${encodeURIComponent(aadhaar)}&phone=${encodeURIComponent(phone)}`;
+} else {
+  document.getElementById("registerError").innerText = "⚠ Failed to send OTP.";
+  document.getElementById("registerError").style.display = "block";
+}
+
             } catch (error) { document.getElementById("registerError").innerText = "⚠ Registration failed. Try again."; document.getElementById("registerError").style.display = "block"; console.error(error); }
         }
 
