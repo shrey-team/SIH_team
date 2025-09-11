@@ -71,7 +71,7 @@ footer button:hover { background:rgba(255,255,255,0.25);}
 <div class="badges">
   <h3>🏆 Your Achievements</h3>
   <div class="badges-list" id="badgesList">
-    <div class="badge-box"> <div class="spinner"></div> </div>
+    <div class="badge-box"><div class="spinner"></div></div>
   </div>
 </div>
 
@@ -93,12 +93,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if(localStorage.getItem("loggedIn")!=="true") window.location.href="index.html";
 
+  // Fetch username from Supabase
   async function fetchUsername(){
     const storedUser = localStorage.getItem("username");
     if(!storedUser) return "Guest";
-    const { data, error } = await supabaseClient.from("registration").select("username").eq("username", storedUser).single();
-    if(error) return storedUser;
-    return data?.username || storedUser;
+    try{
+      const { data, error } = await supabaseClient.from("registration").select("username").eq("username", storedUser).single();
+      if(error || !data) return storedUser;
+      return data.username;
+    } catch(e){ console.error(e); return storedUser; }
   }
 
   const userName = await fetchUsername();
@@ -116,10 +119,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   async function fetchCounts(){
-    showLoading();
     try {
       const { data, error } = await supabaseClient.from("complaints").select("*");
-      if(error) throw error;
+      if(error || !data) throw error;
       document.getElementById("totalReports").textContent = data.length;
       document.getElementById("inProgressReports").textContent = data.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length;
       document.getElementById("resolvedReports").textContent = data.filter(c=>c.status.toLowerCase()==="resolved").length;
@@ -129,7 +131,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function fetchUserCounts(){
     try {
       const { data, error } = await supabaseClient.from("complaints").select("*").eq("username", userName);
-      if(error) throw error;
+      if(error || !data) throw error;
       const total = data.length;
       const inProgress = data.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length;
       const resolved = data.filter(c=>c.status.toLowerCase()==="resolved").length;
@@ -143,18 +145,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       if(total >= 1) badgesHTML += `<div class="badge-box"><div class="badge-icon">💪</div>You are making your community stronger</div>`;
       if(total >= 5) badgesHTML += `<div class="badge-box"><div class="badge-icon">🏆</div>Top Reporter</div>`;
       document.getElementById("badgesList").innerHTML = badgesHTML || `<div class="badge-box">No achievements yet</div>`;
-
     } catch(e){ console.error(e);}
   }
 
-  supabaseClient.channel("complaints-realtime")
-    .on("postgres_changes",{event:"*",schema:"public",table:"complaints"},()=>{
-      fetchCounts(); fetchUserCounts();
-    })
-    .subscribe();
-
+  showLoading();
   fetchCounts();
   fetchUserCounts();
+
+  // Realtime updates
+  supabaseClient.channel('public:complaints')
+    .on('postgres_changes',{event:'*',schema:'public',table:'complaints'},()=>{
+      fetchCounts(); fetchUserCounts();
+    }).subscribe();
 
   window.logout = ()=>{
     localStorage.removeItem("loggedIn");
