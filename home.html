@@ -27,6 +27,27 @@
       box-shadow: 0 3px 6px rgba(0,0,0,0.15);
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .dashboard-btn {
+      background: rgba(255,255,255,0.15);
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .dashboard-btn:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
     .hero {
       background: #ffffff;
       font-size: x-large;
@@ -114,9 +135,62 @@
       font-weight: 600;
     }
 
-    header {
-        font-size: xx-large;
-        font-weight: 900;
+    /* Dashboard styles */
+    .dashboard {
+      display: none;
+      margin: 1rem 2rem;
+    }
+
+    .section {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .section h2 {
+      color: #0a3d62;
+      margin-bottom: 1rem;
+    }
+
+    .profile-info, .stats, .notifications, .settings {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .box {
+      flex: 1;
+      min-width: 200px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1rem;
+      font-size: 1rem;
+    }
+
+    .reports-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .reports-table th, .reports-table td {
+      border: 1px solid #e2e8f0;
+      padding: 0.8rem;
+      text-align: center;
+    }
+
+    .reports-table th {
+      background: #0a3d62;
+      color: #fff;
+    }
+
+    .filter {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
 
     footer {
@@ -146,13 +220,15 @@
 <body>
 <script>
   if (localStorage.getItem("loggedIn") !== "true") {
-    // If not logged in, redirect to login page
     window.location.href = "index.html";
   }
 </script>
 
   <header>
-    CivicRevolution
+    <div class="header-left">
+      <button class="dashboard-btn" onclick="toggleDashboard()">📊 Dashboard</button>
+      CivicRevolution
+    </div>
     <span>Empowering Citizens</span>
   </header>
 
@@ -161,35 +237,109 @@
     <p>Report issues, track progress, and make your community stronger 💪</p>
   </div>
 
-  <div class="issue-grid">
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
-      🚧 Pothole
+  <!-- Normal Home Content -->
+  <div id="homeContent">
+    <div class="issue-grid">
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
+        🚧 Pothole
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
+        🗑 Garbage
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
+        💡 Street Light
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
+        💧 Water Leakage
+      </div>
+      <div class="card" onclick="window.location.href='report.html'">
+        <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
+        ⚠ Other
+      </div>
     </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
-      🗑 Garbage
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
-      💡 Street Light
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
-      💧 Water Leakage
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
-      ⚠ Other
+
+    <div class="impact">
+      <h3>🌍 Community Impact</h3>
+      <div class="impact-stats">
+        <div class="impact-box">📌 23<br><small>Total Reports</small></div>
+        <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
+        <div class="impact-box">✅ 18<br><small>Resolved</small></div>
+      </div>
     </div>
   </div>
 
-  <div class="impact">
-    <h3>🌍 Community Impact</h3>
-    <div class="impact-stats">
-      <div class="impact-box">📌 23<br><small>Total Reports</small></div>
-      <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
-      <div class="impact-box">✅ 18<br><small>Resolved</small></div>
+  <!-- 📊 Dashboard Content -->
+  <div class="dashboard" id="dashboard">
+    <!-- 👤 Profile Section -->
+    <div class="section">
+      <h2>👤 Profile</h2>
+      <div class="profile-info">
+        <div class="box">Username: <span id="profileName"></span></div>
+        <div class="box">Email: <span id="profileEmail">user@example.com</span></div>
+        <div class="box">Join Date: <span id="profileJoin">2025-01-01</span></div>
+      </div>
+      <button onclick="editProfile()">✏️ Edit Profile</button>
+    </div>
+
+    <!-- 📝 My Reports -->
+    <div class="section">
+      <h2>📝 My Reports</h2>
+      <select class="filter" id="reportFilter" onchange="filterReports()">
+        <option value="all">All</option>
+        <option value="Pothole">Pothole</option>
+        <option value="Garbage">Garbage</option>
+        <option value="Street Light">Street Light</option>
+        <option value="Water Leakage">Water Leakage</option>
+        <option value="Other">Other</option>
+      </select>
+      <table class="reports-table" id="reportsTable">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-category="Pothole"><td>Pothole</td><td>Main road pothole</td><td>⏳ Pending</td></tr>
+          <tr data-category="Garbage"><td>Garbage</td><td>Overflowing bins</td><td>🔧 In Progress</td></tr>
+          <tr data-category="Street Light"><td>Street Light</td><td>Light not working</td><td>✅ Resolved</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 📌 Report Statistics -->
+    <div class="section">
+      <h2>📌 Report Statistics</h2>
+      <div class="stats">
+        <div class="box">📌 Total: 3</div>
+        <div class="box">⏳ Pending: 1</div>
+        <div class="box">🔧 In Progress: 1</div>
+        <div class="box">✅ Resolved: 1</div>
+      </div>
+    </div>
+
+    <!-- 🔔 Notifications -->
+    <div class="section">
+      <h2>🔔 Notifications</h2>
+      <div class="notifications">
+        <div class="box">✅ Your street light issue has been resolved!</div>
+        <div class="box">⏳ Garbage collection report is in progress.</div>
+      </div>
+    </div>
+
+    <!-- ⚙ Settings -->
+    <div class="section">
+      <h2>⚙ Settings</h2>
+      <div class="settings">
+        <div class="box">🔑 Change Password</div>
+        <div class="box">🔔 Notification Preferences</div>
+      </div>
+      <button onclick="logout()">🚪 Logout</button>
     </div>
   </div>
 
@@ -204,14 +354,45 @@
   // Logout function
   function logout() {
     localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username"); // ✅ also remove username
+    localStorage.removeItem("username");
     window.location.href = "index.html";
   }
 
   // Show user details
   const userName = localStorage.getItem("username") || "Guest";
   document.getElementById("userName").textContent = userName;
-</script>
+  document.getElementById("profileName").textContent = userName;
+
+  function editProfile() {
+    alert("Profile editing coming soon!");
+  }
+
+  // Filter reports
+  function filterReports() {
+    const filter = document.getElementById("reportFilter").value;
+    const rows = document.querySelectorAll("#reportsTable tbody tr");
+    rows.forEach(row => {
+      if (filter === "all" || row.dataset.category === filter) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  }
+
+  // Toggle Dashboard
+  function toggleDashboard() {
+    const dashboard = document.getElementById("dashboard");
+    const homeContent = document.getElementById("homeContent");
+    if (dashboard.style.display === "none" || dashboard.style.display === "") {
+      dashboard.style.display = "block";
+      homeContent.style.display = "none";
+    } else {
+      dashboard.style.display = "none";
+      homeContent.style.display = "block";
+    }
+  }
+  </script>
 
 </body>
 </html>
