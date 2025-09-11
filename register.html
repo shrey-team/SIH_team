@@ -1,1 +1,98 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CivicRevolution - Register</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2c8ef4, #14cba8);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-container { background:#fff; width:90%; max-width:420px; padding:2rem; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.2); }
+    h1 { text-align:center; margin-bottom:1rem; color:#2563eb; }
+    input { width:100%; padding:0.9rem; margin:0.6rem 0; border:1px solid #ccc; border-radius:10px; font-size:1rem; }
+    button { width:100%; padding:0.9rem; background:#2563eb; color:white; border:none; border-radius:10px; font-size:1.1rem; cursor:pointer; margin-top:0.5rem; transition:0.3s; }
+    button:hover { background:#1e4ed8; }
+    .switch-auth { text-align:center; margin-top:1rem; font-size:0.95rem; }
+    .switch-auth a { color:#2563eb; font-weight:bold; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h1>Register</h1>
+    <input type="text" id="regUsername" placeholder="Full Name" />
+    <input type="password" id="regPassword" placeholder="Password" />
+    <input type="text" id="regAadhaar" placeholder="Aadhaar Number" maxlength="12" />
+    <input type="text" id="regPhone" placeholder="Phone Number" maxlength="10" />
+    <button id="registerBtn">Register</button>
+    <p id="registerError" style="color:red; font-size:0.9rem; display:none;">⚠ Fill all fields correctly</p>
+    <p class="switch-auth">Already have an account? <a href="login.html">Login</a></p>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    const supabase = createClient(
+      "https://xnqtjcovuqzajuqzaunf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
+    );
+
+    async function register() {
+      const user = document.getElementById("regUsername").value.trim();
+      const pass = document.getElementById("regPassword").value.trim();
+      const aadhaar = document.getElementById("regAadhaar").value.trim();
+      const phone = document.getElementById("regPhone").value.trim();
+
+      if (!user || !pass || !aadhaar || !phone) {
+        document.getElementById("registerError").innerText = "⚠ All fields are required.";
+        document.getElementById("registerError").style.display = "block";
+        return;
+      }
+      if (!/^\d{12}$/.test(aadhaar)) {
+        document.getElementById("registerError").innerText = "⚠ Aadhaar must be 12 digits.";
+        document.getElementById("registerError").style.display = "block";
+        return;
+      }
+      if (!/^\d{10}$/.test(phone)) {
+        document.getElementById("registerError").innerText = "⚠ Phone number must be 10 digits.";
+        document.getElementById("registerError").style.display = "block";
+        return;
+      }
+
+      try {
+        const { data: existing } = await supabase
+          .from('registrations')
+          .select('username')
+          .eq('username', user);
+
+        if (existing && existing.length > 0) {
+          document.getElementById("registerError").innerText = "⚠ Username already registered.";
+          document.getElementById("registerError").style.display = "block";
+          return;
+        }
+
+        const { error } = await supabase
+          .from('registrations')
+          .insert([{ username: user, password: pass, aadhar: aadhaar, phone: phone }]);
+
+        if (error) throw error;
+
+        alert("✅ Registration Successful! Please login.");
+        window.location.href = "login.html";
+      } catch (error) {
+        document.getElementById("registerError").innerText = "⚠ Registration failed. Try again.";
+        document.getElementById("registerError").style.display = "block";
+        console.error(error);
+      }
+    }
+
+    document.getElementById("registerBtn").onclick = register;
+  </script>
+</body>
+</html>
