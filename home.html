@@ -80,7 +80,7 @@
       background: #f8fafc;
     }
 
-    .impact {
+    .impact, .user-impact, .badges {
       background: #ffffff;
       padding: 2rem;
       border-radius: 12px;
@@ -89,12 +89,16 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
-    .impact h3 {
-      color: #0a3d62;
+    .impact h3, .user-impact h3, .badges h3 {
       margin-bottom: 1rem;
     }
 
-    .impact-stats {
+    /* Distinct colors for dashboards */
+    .impact h3 { color: #0a3d62; }
+    .user-impact h3 { color: #1e3799; }
+    .badges h3 { color: #0a3d62; }
+
+    .impact-stats, .badges-list {
       display: flex;
       justify-content: space-around;
       flex-wrap: wrap;
@@ -102,15 +106,28 @@
       margin-top: 1rem;
     }
 
-    .impact-box {
+    .impact-box, .badge-box {
       flex: 1;
-      min-width: 200px;
+      min-width: 180px;
       background: #f8fafc;
       padding: 1.5rem;
       border-radius: 12px;
       border: 1px solid #e2e8f0;
       font-size: 1.2rem;
       font-weight: 600;
+    }
+
+    /* Badge colors */
+    .badge-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      gap: 0.5rem;
+    }
+    .badge-icon {
+      font-size: 1.5rem;
     }
 
     footer {
@@ -164,102 +181,141 @@
   }
 </script>
 
-  <header>
-    CivicRevolution
-    <span>Empowering Citizens</span>
-  </header>
+<header>
+  CivicRevolution
+  <span>Empowering Citizens</span>
+</header>
 
-  <div class="hero">
-    <h2>Welcome👋 <span id="userName"></span></h2>
-    <p>Report issues, track progress, and make your community stronger 💪</p>
+<div class="hero">
+  <h2><span id="userGreeting"></span> <span id="userName"></span></h2>
+  <p>Report issues, track progress, and make your community stronger 💪</p>
+</div>
+
+<div class="issue-grid">
+  <div class="card" onclick="window.location.href='report.html'">
+    <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
+    🚧 Pothole
   </div>
+  <div class="card" onclick="window.location.href='report.html'">
+    <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
+    🗑 Garbage
+  </div>
+  <div class="card" onclick="window.location.href='report.html'">
+    <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
+    💡 Street Light
+  </div>
+  <div class="card" onclick="window.location.href='report.html'">
+    <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
+    💧 Water Leakage
+  </div>
+  <div class="card" onclick="window.location.href='report.html'">
+    <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
+    ⚠ Other
+  </div>
+</div>
 
-  <div class="issue-grid">
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
-      🚧 Pothole
+<!-- Community Impact Dashboard -->
+<div class="impact">
+  <h3>🌍 Community Impact</h3>
+  <div class="impact-stats">
+    <div class="impact-box"><div id="totalReports" class="count"><div class="spinner"></div></div><small>Total Reports</small></div>
+    <div class="impact-box"><div id="inProgressReports" class="count"><div class="spinner"></div></div><small>In Progress</small></div>
+    <div class="impact-box"><div id="resolvedReports" class="count"><div class="spinner"></div></div><small>Resolved</small></div>
+  </div>
+</div>
+
+<!-- User Dashboard -->
+<div class="user-impact impact">
+  <h3>📝 Your Reports</h3>
+  <div class="impact-stats">
+    <div class="impact-box"><div id="userTotal" class="count"><div class="spinner"></div></div><small>Total Submitted</small></div>
+    <div class="impact-box"><div id="userInProgress" class="count"><div class="spinner"></div></div><small>In Progress</small></div>
+    <div class="impact-box"><div id="userResolved" class="count"><div class="spinner"></div></div><small>Resolved</small></div>
+  </div>
+</div>
+
+<!-- Badges Section -->
+<div class="badges">
+  <h3>🏆 Your Achievements</h3>
+  <div class="badges-list">
+    <div class="badge-box">
+      <div class="badge-icon">🥇</div>
+      <div>First Report Submitted</div>
     </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
-      🗑 Garbage
+    <div class="badge-box">
+      <div class="badge-icon">🌟</div>
+      <div>5 Reports Resolved</div>
     </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
-      💡 Street Light
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
-      💧 Water Leakage
-    </div>
-    <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
-      ⚠ Other
+    <div class="badge-box">
+      <div class="badge-icon">💪</div>
+      <div>Community Champion</div>
     </div>
   </div>
+</div>
 
-  <div class="impact">
-    <h3>🌍 Community Impact</h3>
-    <div class="impact-stats">
-      <div class="impact-box"><div id="totalReports" class="count"><div class="spinner"></div></div><small>Total Reports</small></div>
-      <div class="impact-box"><div id="inProgressReports" class="count"><div class="spinner"></div></div><small>In Progress</small></div>
-      <div class="impact-box"><div id="resolvedReports" class="count"><div class="spinner"></div></div><small>Resolved</small></div>
-    </div>
-  </div>
+<footer>
+  <button onclick="window.location.href='home.html'">🏠 Home</button>
+  <button onclick="window.location.href='report.html'">📝 Report</button>
+  <button onclick="window.location.href='maps.html'">🗺 Maps</button>
+  <button onclick="logout()">🚪 Logout</button>
+</footer>
 
-  <footer>
-    <button onclick="window.location.href='home.html'">🏠 Home</button>
-    <button onclick="window.location.href='report.html'">📝 Report</button>
-    <button onclick="window.location.href='maps.html'">🗺 Maps</button>
-    <button onclick="logout()">🚪 Logout</button>
-  </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("username");
+    window.location.href = "index.html";
+  }
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      localStorage.removeItem("username");
-      window.location.href = "index.html";
-    }
+  // Personalized Greeting
+  const userName = localStorage.getItem("username") || "Guest";
+  const hours = new Date().getHours();
+  let greeting = "Hello";
+  if (hours < 12) greeting = "Good morning";
+  else if (hours < 18) greeting = "Good afternoon";
+  else greeting = "Good evening";
 
-    const userName = localStorage.getItem("username") || "Guest";
-    document.getElementById("userName").textContent = userName;
+  document.getElementById("userName").textContent = userName;
+  document.getElementById("userGreeting").textContent = greeting;
 
-    const { createClient } = supabase;
-    const supabaseClient = createClient(
-      "https://xnqtjcovuqzajuqzaunf.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
-    );
+  const { createClient } = supabase;
+  const supabaseClient = createClient(
+    "https://xnqtjcovuqzajuqzaunf.supabase.co",
+    "YOUR_SUPABASE_KEY_HERE"
+  );
 
-    function showLoading() {
-      document.getElementById("totalReports").innerHTML = '<div class="spinner"></div>';
-      document.getElementById("inProgressReports").innerHTML = '<div class="spinner"></div>';
-      document.getElementById("resolvedReports").innerHTML = '<div class="spinner"></div>';
-    }
+  function showLoading() {
+    ["totalReports","inProgressReports","resolvedReports","userTotal","userInProgress","userResolved"]
+      .forEach(id => document.getElementById(id).innerHTML = '<div class="spinner"></div>');
+  }
 
-    async function fetchCounts() {
-      showLoading();
-      const { data, error } = await supabaseClient.from("complaints").select("*");
+  async function fetchCounts() {
+    showLoading();
+    const { data, error } = await supabaseClient.from("complaints").select("*");
+    if(error) { console.error(error); return; }
 
-      if (error) {
-        console.error("Error fetching complaints:", error);
-        return;
-      }
+    document.getElementById("totalReports").textContent = data.length;
+    document.getElementById("inProgressReports").textContent = data.filter(c => c.status === "In Progress" || c.status === "in_progress").length;
+    document.getElementById("resolvedReports").textContent = data.filter(c => c.status === "Resolved" || c.status === "resolved").length;
+  }
 
-      let totalReports = data.length;
-      let inProgress = data.filter(c => c.status === "In Progress" || c.status === "in_progress").length;
-      let resolved = data.filter(c => c.status === "Resolved" || c.status === "resolved").length;
+  async function fetchUserCounts() {
+    const { data, error } = await supabaseClient.from("complaints").select("*").eq("username", userName);
+    if(error) { console.error(error); return; }
 
-      document.getElementById("totalReports").textContent = totalReports;
-      document.getElementById("inProgressReports").textContent = inProgress;
-      document.getElementById("resolvedReports").textContent = resolved;
-    }
+    document.getElementById("userTotal").textContent = data.length;
+    document.getElementById("userInProgress").textContent = data.filter(c => c.status === "In Progress" || c.status === "in_progress").length;
+    document.getElementById("userResolved").textContent = data.filter(c => c.status === "Resolved" || c.status === "resolved").length;
+  }
 
-    supabaseClient
-      .channel("complaints-realtime")
-      .on("postgres_changes", { event: "*", schema: "public", table: "complaints" }, () => fetchCounts())
-      .subscribe();
+  supabaseClient
+    .channel("complaints-realtime")
+    .on("postgres_changes", { event: "*", schema: "public", table: "complaints" }, () => { fetchCounts(); fetchUserCounts(); })
+    .subscribe();
 
-    fetchCounts();
-  </script>
+  fetchCounts();
+  fetchUserCounts();
+</script>
 </body>
 </html>
