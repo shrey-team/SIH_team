@@ -25,8 +25,6 @@ header { background:#0a3d62; padding:1rem 2rem; color:#fff; font-size:1.5rem; fo
 footer { background:#0a3d62; padding:1rem; display:flex; justify-content:space-around; color:#fff;}
 footer button { background:rgba(255,255,255,0.1); border:none; padding:0.8rem 1.4rem; border-radius:8px; color:#fff; font-size:1rem; cursor:pointer; transition:0.2s;}
 footer button:hover { background:rgba(255,255,255,0.25);}
-.spinner { border:4px solid #f3f3f3; border-top:4px solid #3b82f6; border-radius:50%; width:24px; height:24px; animation:spin 1s linear infinite; margin:auto;}
-@keyframes spin { 0% {transform:rotate(0deg);} 100% {transform:rotate(360deg);} }
 .count { font-size:24px; margin-top:10px;}
 </style>
 </head>
@@ -53,25 +51,25 @@ footer button:hover { background:rgba(255,255,255,0.25);}
 <div class="impact">
   <h3>🌍 Community Impact</h3>
   <div class="impact-stats">
-    <div class="impact-box"><div id="totalReports" class="count"><div class="spinner"></div></div><small>Total Reports</small></div>
-    <div class="impact-box"><div id="inProgressReports" class="count"><div class="spinner"></div></div><small>In Progress</small></div>
-    <div class="impact-box"><div id="resolvedReports" class="count"><div class="spinner"></div></div><small>Resolved</small></div>
+    <div class="impact-box"><div id="totalReports" class="count">0</div><small>Total Reports</small></div>
+    <div class="impact-box"><div id="inProgressReports" class="count">0</div><small>In Progress</small></div>
+    <div class="impact-box"><div id="resolvedReports" class="count">0</div><small>Resolved</small></div>
   </div>
 </div>
 
 <div class="user-impact impact">
   <h3>📝 Your Reports</h3>
   <div class="impact-stats">
-    <div class="impact-box"><div id="userTotal" class="count"><div class="spinner"></div></div><small>Total Submitted</small></div>
-    <div class="impact-box"><div id="userInProgress" class="count"><div class="spinner"></div></div><small>In Progress</small></div>
-    <div class="impact-box"><div id="userResolved" class="count"><div class="spinner"></div></div><small>Resolved</small></div>
+    <div class="impact-box"><div id="userTotal" class="count">0</div><small>Total Submitted</small></div>
+    <div class="impact-box"><div id="userInProgress" class="count">0</div><small>In Progress</small></div>
+    <div class="impact-box"><div id="userResolved" class="count">0</div><small>Resolved</small></div>
   </div>
 </div>
 
 <div class="badges">
   <h3>🏆 Your Achievements</h3>
   <div class="badges-list" id="badgesList">
-    <div class="badge-box"><div class="spinner"></div></div>
+    <div class="badge-box">No achievements yet</div>
   </div>
 </div>
 
@@ -91,56 +89,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
   );
 
-  if(localStorage.getItem("loggedIn")!=="true") window.location.href="index.html";
+  if(localStorage.getItem("loggedIn")!=="true") { window.location.href="index.html"; return; }
 
-  // Fetch username from Supabase
-  async function fetchUsername(){
-    const storedUser = localStorage.getItem("username");
-    if(!storedUser) return "Guest";
-    try{
-      const { data, error } = await supabaseClient.from("registration").select("username").eq("username", storedUser).single();
-      if(error || !data) return storedUser;
-      return data.username;
-    } catch(e){ console.error(e); return storedUser; }
-  }
-
-  const userName = await fetchUsername();
+  // Use localStorage username directly
+  const userName = localStorage.getItem("username") || "Guest";
   document.getElementById("userName").textContent = userName;
 
+  // Greeting
   const hours = new Date().getHours();
   let greeting = hours<12?"Good morning":hours<18?"Good afternoon":"Good evening";
   document.getElementById("userGreeting").textContent = `${greeting},`;
 
-  function showLoading(){
-    ["totalReports","inProgressReports","resolvedReports","userTotal","userInProgress","userResolved"].forEach(id=>{
-      document.getElementById(id).innerHTML='<div class="spinner"></div>';
-    });
-    document.getElementById("badgesList").innerHTML='<div class="badge-box"><div class="spinner"></div></div>';
-  }
-
+  // Fetch community counts
   async function fetchCounts(){
     try {
-      const { data, error } = await supabaseClient.from("complaints").select("*");
-      if(error || !data) throw error;
-      document.getElementById("totalReports").textContent = data.length;
-      document.getElementById("inProgressReports").textContent = data.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length;
-      document.getElementById("resolvedReports").textContent = data.filter(c=>c.status.toLowerCase()==="resolved").length;
-    } catch(e){ console.error(e);}
+      const { data } = await supabaseClient.from("complaints").select("*");
+      document.getElementById("totalReports").textContent = data?.length || 0;
+      document.getElementById("inProgressReports").textContent = data?.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length || 0;
+      document.getElementById("resolvedReports").textContent = data?.filter(c=>c.status.toLowerCase()==="resolved").length || 0;
+    } catch(e){ console.error(e); }
   }
 
+  // Fetch user counts & badges
   async function fetchUserCounts(){
     try {
-      const { data, error } = await supabaseClient.from("complaints").select("*").eq("username", userName);
-      if(error || !data) throw error;
-      const total = data.length;
-      const inProgress = data.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length;
-      const resolved = data.filter(c=>c.status.toLowerCase()==="resolved").length;
+      const { data } = await supabaseClient.from("complaints").select("*").eq("username", userName);
+      const total = data?.length || 0;
+      const inProgress = data?.filter(c=>["in progress","in_progress"].includes(c.status.toLowerCase())).length || 0;
+      const resolved = data?.filter(c=>c.status.toLowerCase()==="resolved").length || 0;
 
       document.getElementById("userTotal").textContent = total;
       document.getElementById("userInProgress").textContent = inProgress;
       document.getElementById("userResolved").textContent = resolved;
 
-      // Dynamic badges
+      // badges
       let badgesHTML = "";
       if(total >= 1) badgesHTML += `<div class="badge-box"><div class="badge-icon">💪</div>You are making your community stronger</div>`;
       if(total >= 5) badgesHTML += `<div class="badge-box"><div class="badge-icon">🏆</div>Top Reporter</div>`;
@@ -148,16 +130,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     } catch(e){ console.error(e);}
   }
 
-  showLoading();
   fetchCounts();
   fetchUserCounts();
 
-  // Realtime updates
-  supabaseClient.channel('public:complaints')
-    .on('postgres_changes',{event:'*',schema:'public',table:'complaints'},()=>{
-      fetchCounts(); fetchUserCounts();
-    }).subscribe();
-
+  // Logout
   window.logout = ()=>{
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("username");
