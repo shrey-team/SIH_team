@@ -1,38 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CivicRevolution - Home</title>
   <style>
     body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f2f4f8;
-      color: #2d3748;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+      font-family: Arial, sans-serif;
       margin: 0;
+      padding: 0;
+      background: #f4f4f4;
     }
-
     header {
-      background: #0a3d62;
-      padding: 1rem 2rem;
+      background: #4a90e2;
       color: #fff;
-      font-size: 1.5rem;
-      font-weight: bold;
+      padding: 1rem;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      align-items: center;
     }
-
     .header-left {
       display: flex;
       align-items: center;
       gap: 1rem;
     }
-
     .dashboard-btn {
       background: rgba(255,255,255,0.15);
       border: none;
@@ -43,356 +34,282 @@
       cursor: pointer;
       transition: 0.2s;
     }
-
-    .dashboard-btn:hover {
-      background: rgba(255,255,255,0.3);
-    }
-
-    .hero {
-      background: #ffffff;
-      font-size: x-large;
-      font-weight: bold;
-      padding: 2rem;
-      text-align: center;
-      border-radius: 12px;
-      margin: 1rem 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .hero h2 {
-      color: #0a3d62;
-      margin-bottom: 0.5rem;
-    }
-
-    /* Issue Grid full width */
-    .issue-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
-      margin: 1.5rem 2rem;
-      flex-grow: 1;
-    }
-
-    .card {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 15px;
-      text-align: center;
-      font-size: 1.3rem;
-      font-weight: 600;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: 0.25s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card img {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 1rem;
-    }
-
-    .card:hover {
-      transform: scale(1.02);
-      border-color: #0a3d62;
-      background: #f8fafc;
-    }
-
-    .impact {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 12px;
-      margin: 1rem 2rem 2rem;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .impact h3 {
-      color: #0a3d62;
-      margin-bottom: 1rem;
-    }
-
-    .impact-stats {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .impact-box {
-      flex: 1;
-      min-width: 200px;
-      background: #f8fafc;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    /* Dashboard styles */
-    .dashboard {
-      display: none;
-      margin: 1rem 2rem;
-    }
-
-    .section {
+    .dashboard-btn:hover { background: rgba(255,255,255,0.3); }
+    main { padding: 2rem; }
+    section {
       background: #fff;
-      border-radius: 12px;
-      padding: 1.5rem;
       margin-bottom: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
-    .section h2 {
-      color: #0a3d62;
-      margin-bottom: 1rem;
-    }
-
-    .profile-info, .stats, .notifications, .settings {
+    h2 { margin-top: 0; }
+    .stats {
       display: flex;
-      flex-wrap: wrap;
       gap: 1rem;
+      flex-wrap: wrap;
     }
-
-    .box {
+    .stats .box {
       flex: 1;
-      min-width: 200px;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
       padding: 1rem;
-      font-size: 1rem;
+      background: #e3f2fd;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
     }
-
-    .reports-table {
+    table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 1rem;
     }
-
-    .reports-table th, .reports-table td {
-      border: 1px solid #e2e8f0;
-      padding: 0.8rem;
-      text-align: center;
-    }
-
-    .reports-table th {
-      background: #0a3d62;
-      color: #fff;
-    }
-
-    .filter {
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    footer {
-      background: #0a3d62;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-around;
-      color: #fff;
-    }
-
-    footer button {
-      background: rgba(255,255,255,0.1);
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 0.75rem; text-align: left; }
+    .logout-btn {
+      background: #e74c3c;
       border: none;
-      padding: 0.8rem 1.4rem;
-      border-radius: 8px;
+      padding: 0.5rem 1rem;
       color: #fff;
-      font-size: 1rem;
+      border-radius: 6px;
       cursor: pointer;
       transition: 0.2s;
     }
-
-    footer button:hover {
-      background: rgba(255,255,255,0.25);
-    }
+    .logout-btn:hover { background: #c0392b; }
   </style>
 </head>
 <body>
-<script>
-  if (localStorage.getItem("loggedIn") !== "true") {
-    window.location.href = "index.html";
-  }
-</script>
-
   <header>
     <div class="header-left">
       <button class="dashboard-btn" onclick="toggleDashboard()">📊 Dashboard</button>
       CivicRevolution
     </div>
-    <span>Empowering Citizens</span>
+    <span>Welcome, <b id="userName">Guest</b></span>
   </header>
 
-  <div class="hero">
-    <h2>Welcome👋 <span id="userName"></span></h2>
-    <p>Report issues, track progress, and make your community stronger 💪</p>
-  </div>
+  <main>
+    <!-- Normal Home Content -->
+    <section id="homeContent">
+      <h2>Empowering Citizens</h2>
+      <p>Welcome to CivicRevolution! Use the dashboard to track your reports and activities.</p>
+    </section>
 
-  <!-- Normal Home Content -->
-  <div id="homeContent">
-    <div class="issue-grid">
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
-        🚧 Pothole
+    <!-- Dashboard Section -->
+    <section id="dashboard" style="display:none;">
+      <h2>User Dashboard</h2>
+      
+      <!-- Profile -->
+      <div style="margin-bottom:1rem;">
+        <h3>👤 Profile</h3>
+        <p><b>Name:</b> <span id="profileName">N/A</span></p>
+        <p><b>Email:</b> <span id="profileEmail">N/A</span></p>
+        <p><b>Join Date:</b> <span id="profileJoin">N/A</span></p>
       </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
-        🗑 Garbage
-      </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
-        💡 Street Light
-      </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
-        💧 Water Leakage
-      </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
-        ⚠ Other
-      </div>
-    </div>
 
-    <div class="impact">
-      <h3>🌍 Community Impact</h3>
-      <div class="impact-stats">
-        <div class="impact-box">📌 23<br><small>Total Reports</small></div>
-        <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
-        <div class="impact-box">✅ 18<br><small>Resolved</small></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 📊 Dashboard Content -->
-  <div class="dashboard" id="dashboard">
-    <!-- 👤 Profile Section -->
-    <div class="section">
-      <h2>👤 Profile</h2>
-      <div class="profile-info">
-        <div class="box">Username: <span id="profileName"></span></div>
-        <div class="box">Email: <span id="profileEmail">user@example.com</span></div>
-        <div class="box">Join Date: <span id="profileJoin">2025-01-01</span></div>
-      </div>
-      <button onclick="editProfile()">✏️ Edit Profile</button>
-    </div>
-
-    <!-- 📝 My Reports -->
-    <div class="section">
-      <h2>📝 My Reports</h2>
-      <select class="filter" id="reportFilter" onchange="filterReports()">
-        <option value="all">All</option>
-        <option value="Pothole">Pothole</option>
-        <option value="Garbage">Garbage</option>
-        <option value="Street Light">Street Light</option>
-        <option value="Water Leakage">Water Leakage</option>
-        <option value="Other">Other</option>
-      </select>
-      <table class="reports-table" id="reportsTable">
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr data-category="Pothole"><td>Pothole</td><td>Main road pothole</td><td>⏳ Pending</td></tr>
-          <tr data-category="Garbage"><td>Garbage</td><td>Overflowing bins</td><td>🔧 In Progress</td></tr>
-          <tr data-category="Street Light"><td>Street Light</td><td>Light not working</td><td>✅ Resolved</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- 📌 Report Statistics -->
-    <div class="section">
-      <h2>📌 Report Statistics</h2>
+      <!-- Stats -->
       <div class="stats">
-        <div class="box">📌 Total: 3</div>
-        <div class="box">⏳ Pending: 1</div>
-        <div class="box">🔧 In Progress: 1</div>
-        <div class="box">✅ Resolved: 1</div>
+        <div class="box">📌 Total: 0</div>
+        <div class="box">⏳ Pending: 0</div>
+        <div class="box">🔧 In Progress: 0</div>
+        <div class="box">✅ Resolved: 0</div>
       </div>
-    </div>
 
-    <!-- 🔔 Notifications -->
-    <div class="section">
-      <h2>🔔 Notifications</h2>
-      <div class="notifications">
-        <div class="box">✅ Your street light issue has been resolved!</div>
-        <div class="box">⏳ Garbage collection report is in progress.</div>
+      <!-- Reports -->
+      <div style="margin-top:1.5rem;">
+        <h3>📝 My Reports</h3>
+        <label>Filter:
+          <select id="reportFilter" onchange="filterReports()">
+            <option value="all">All</option>
+            <option value="Pothole">Pothole</option>
+            <option value="Garbage">Garbage</option>
+            <option value="Water">Water</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <table id="reportsTable">
+          <thead>
+            <tr>
+              <th>Issue</th>
+              <th>Description</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="3">Loading...</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>
 
-    <!-- ⚙ Settings -->
-    <div class="section">
-      <h2>⚙ Settings</h2>
-      <div class="settings">
-        <div class="box">🔑 Change Password</div>
-        <div class="box">🔔 Notification Preferences</div>
+      <!-- Logout -->
+      <div style="margin-top:1.5rem;">
+        <button class="logout-btn" onclick="logout()">Logout</button>
       </div>
-      <button onclick="logout()">🚪 Logout</button>
-    </div>
-  </div>
+    </section>
+  </main>
 
-  <footer>
-    <button onclick="window.location.href='home.html'">🏠 Home</button>
-    <button onclick="window.location.href='report.html'">📝 Report</button>
-    <button onclick="window.location.href='maps.html'">🗺 Maps</button>
-    <button onclick="logout()">🚪 Logout</button>
-  </footer>
+  <!-- Supabase Integration -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-  <script>
-  // Logout function
-  function logout() {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username");
-    window.location.href = "index.html";
-  }
+    const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Show user details
-  const userName = localStorage.getItem("username") || "Guest";
-  document.getElementById("userName").textContent = userName;
-  document.getElementById("profileName").textContent = userName;
+    let user = null;
 
-  function editProfile() {
-    alert("Profile editing coming soon!");
-  }
-
-  // Filter reports
-  function filterReports() {
-    const filter = document.getElementById("reportFilter").value;
-    const rows = document.querySelectorAll("#reportsTable tbody tr");
-    rows.forEach(row => {
-      if (filter === "all" || row.dataset.category === filter) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
+    // --- Load User Profile ---
+    async function loadUser() {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data.user) {
+        localStorage.removeItem("loggedIn");
+        localStorage.removeItem("username");
+        window.location.href = "index.html";
+        return;
       }
-    });
-  }
+      user = data.user;
 
-  // Toggle Dashboard
-  function toggleDashboard() {
-    const dashboard = document.getElementById("dashboard");
-    const homeContent = document.getElementById("homeContent");
-    if (dashboard.style.display === "none" || dashboard.style.display === "") {
-      dashboard.style.display = "block";
-      homeContent.style.display = "none";
-    } else {
-      dashboard.style.display = "none";
-      homeContent.style.display = "block";
+      const email = user.email || "unknown@example.com";
+      const created = user.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A";
+      const username = user.user_metadata?.username || email.split("@")[0];
+
+      document.getElementById("userName").textContent = username;
+      document.getElementById("profileName").textContent = username;
+      document.getElementById("profileEmail").textContent = email;
+      document.getElementById("profileJoin").textContent = created;
+
+      localStorage.setItem("username", username);
     }
-  }
-  </script>
 
+    // --- Reports ---
+    function escapeHtml(str = '') {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    async function loadReports() {
+      const tbody = document.querySelector('#reportsTable tbody');
+      tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+
+      const { data, error } = await supabase
+        .from('complaints')
+        .select('*')
+        .eq('username', localStorage.getItem("username"))
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase fetch error:', error);
+        tbody.innerHTML = '<tr><td colspan="3">Failed to load reports</td></tr>';
+        updateStats([]);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3">No reports yet</td></tr>';
+        updateStats([]);
+        return;
+      }
+
+      tbody.innerHTML = '';
+      data.forEach(r => {
+        const statusLabel = r.status === 'Resolved' ? '✅ Resolved' :
+                            r.status === 'In Progress' ? '🔧 In Progress' : '⏳ Pending';
+        const tr = document.createElement('tr');
+        tr.dataset.category = r.issue_type || 'Other';
+        tr.innerHTML = `
+          <td>${escapeHtml(r.issue_type || '')}</td>
+          <td>${escapeHtml(r.description || '')}
+            <div style="margin-top:6px;font-size:0.85rem;color:#555;">
+              ${escapeHtml(r.location_text || '')}${r.pincode ? ' • ' + escapeHtml(r.pincode) : ''}
+            </div>
+          </td>
+          <td>
+            <div style="margin-bottom:6px;">${statusLabel}</div>
+            <div>
+              <button type="button" data-id="${r.id}" data-status="In Progress" class="status-btn">Mark In Progress</button>
+              <button type="button" data-id="${r.id}" data-status="Resolved" class="status-btn">Mark Resolved</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      tbody.querySelectorAll('.status-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const id = Number(btn.dataset.id);
+          const newStatus = btn.dataset.status;
+          await updateStatus(id, newStatus);
+        };
+      });
+
+      updateStats(data);
+    }
+
+    function updateStats(data) {
+      const total = data.length || 0;
+      const pending = data.filter(r => r.status === 'Pending').length;
+      const inProgress = data.filter(r => r.status === 'In Progress').length;
+      const resolved = data.filter(r => r.status === 'Resolved').length;
+      const statsBoxes = document.querySelectorAll('.stats .box');
+      if (statsBoxes.length >= 4) {
+        statsBoxes[0].textContent = `📌 Total: ${total}`;
+        statsBoxes[1].textContent = `⏳ Pending: ${pending}`;
+        statsBoxes[2].textContent = `🔧 In Progress: ${inProgress}`;
+        statsBoxes[3].textContent = `✅ Resolved: ${resolved}`;
+      }
+    }
+
+    async function updateStatus(id, newStatus) {
+      if (!confirm(`Change status to "${newStatus}" for report #${id}?`)) return;
+      const { error } = await supabase
+        .from('complaints')
+        .update({ status: newStatus })
+        .eq('id', id);
+
+      if (error) {
+        alert('Update failed: ' + error.message);
+        console.error(error);
+        return;
+      }
+      await loadReports();
+    }
+    window.updateStatus = updateStatus;
+
+    function filterReports() {
+      const filter = document.getElementById("reportFilter").value;
+      const rows = document.querySelectorAll("#reportsTable tbody tr");
+      rows.forEach(row => {
+        row.style.display = (filter === "all" || row.dataset.category === filter) ? "" : "none";
+      });
+    }
+    window.filterReports = filterReports;
+
+    // --- Logout ---
+    async function logout() {
+      await supabase.auth.signOut();
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("username");
+      window.location.href = "index.html";
+    }
+    window.logout = logout;
+
+    function toggleDashboard() {
+      const dashboard = document.getElementById("dashboard");
+      const homeContent = document.getElementById("homeContent");
+      if (dashboard.style.display === "none" || dashboard.style.display === "") {
+        dashboard.style.display = "block";
+        homeContent.style.display = "none";
+        loadReports();
+      } else {
+        dashboard.style.display = "none";
+        homeContent.style.display = "";
+      }
+    }
+    window.toggleDashboard = toggleDashboard;
+
+    document.addEventListener('DOMContentLoaded', loadUser);
+  </script>
 </body>
 </html>
