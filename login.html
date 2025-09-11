@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CivicRevolution - Login</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2c8ef4, #14cba8);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-container { background:#fff; width:90%; max-width:420px; padding:2rem; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.2); }
+    h1 { text-align:center; margin-bottom:1rem; color:#2563eb; }
+    input { width:100%; padding:0.9rem; margin:0.6rem 0; border:1px solid #ccc; border-radius:10px; font-size:1rem; }
+    button { width:100%; padding:0.9rem; background:#2563eb; color:white; border:none; border-radius:10px; font-size:1.1rem; cursor:pointer; margin-top:0.5rem; transition:0.3s; }
+    button:hover { background:#1e4ed8; }
+    .switch-auth { text-align:center; margin-top:1rem; font-size:0.95rem; }
+    .switch-auth a { color:#2563eb; font-weight:bold; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h1>Login</h1>
+    <input type="text" id="loginUsername" placeholder="Username" />
+    <input type="password" id="loginPassword" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <p id="loginError" style="color:red; font-size:0.9rem; display:none;">❌ Invalid username or password.</p>
+    <p class="switch-auth">Don’t have an account? <a href="register.html">Register</a></p>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+    const supabase = createClient(
+      "https://xnqtjcovuqzajuqzaunf.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
+    );
+
+    async function login() {
+      const user = document.getElementById("loginUsername").value.trim();
+      const pass = document.getElementById("loginPassword").value.trim();
+
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('*')
+        .eq('username', user)
+        .eq('password', pass);
+
+      if (error) {
+        document.getElementById("loginError").innerText = "❌ Error reading database.";
+        document.getElementById("loginError").style.display = "block";
+        return;
+      }
+      if (data && data.length > 0) {
+        localStorage.setItem("loggedIn","true");
+        window.location.href="home.html";
+      } else {
+        document.getElementById("loginError").innerText = "❌ Invalid username or password.";
+        document.getElementById("loginError").style.display = "block";
+      }
+    }
+
+    document.getElementById("loginBtn").onclick = login;
+  </script>
+</body>
+</html>
