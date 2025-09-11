@@ -1,57 +1,217 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jharkhand Map — Current Location</title>
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CivicRevolution - Home</title>
   <style>
-    /* Ensure the map fills the screen */
-    html, body { height: 100%; margin: 0; padding: 0; }
-    #map { height: 100%; width: 100%; }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f2f4f8;
+      color: #2d3748;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    header {
+      background: #0a3d62;
+      padding: 1rem 2rem;
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    }
+
+    .hero {
+      background: #ffffff;
+      font-size: x-large;
+      font-weight: bold;
+      padding: 2rem;
+      text-align: center;
+      border-radius: 12px;
+      margin: 1rem 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .hero h2 {
+      color: #0a3d62;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Issue Grid full width */
+    .issue-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 30px;
+      margin: 1.5rem 2rem;
+      flex-grow: 1;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.25s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card img {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1rem;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+      border-color: #0a3d62;
+      background: #f8fafc;
+    }
+
+    .impact {
+      background: #ffffff;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 1rem 2rem 2rem;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .impact h3 {
+      color: #0a3d62;
+      margin-bottom: 1rem;
+    }
+
+    .impact-stats {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .impact-box {
+      flex: 1;
+      min-width: 200px;
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    header {
+        font-size: xx-large;
+        font-weight: 900;
+    }
+
+    footer {
+      background: #0a3d62;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-around;
+      color: #fff;
+    }
+
+    footer button {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      padding: 0.8rem 1.4rem;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    footer button:hover {
+      background: rgba(255,255,255,0.25);
+    }
   </style>
 </head>
 <body>
-  <!-- Map container -->
-  <div id="map"></div>
+<script>
+  if (localStorage.getItem("loggedIn") !== "true") {
+    // If not logged in, redirect to login page
+    window.location.href = "index.html";
+  }
+</script>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <header>
+    CivicRevolution
+    <span>Empowering Citizens</span>
+  </header>
+
+  <div class="hero">
+    <h2>Welcome👋 <span id="userName"></span></h2>
+    <p>Report issues, track progress, and make your community stronger 💪</p>
+  </div>
+
+  <div class="issue-grid">
+    <div class="card" onclick="window.location.href='report.html'">
+      <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
+      🚧 Pothole
+    </div>
+    <div class="card" onclick="window.location.href='report.html'">
+      <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
+      🗑 Garbage
+    </div>
+    <div class="card" onclick="window.location.href='report.html'">
+      <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
+      💡 Street Light
+    </div>
+    <div class="card" onclick="window.location.href='report.html'">
+      <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
+      💧 Water Leakage
+    </div>
+    <div class="card" onclick="window.location.href='report.html'">
+      <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
+      ⚠ Other
+    </div>
+  </div>
+
+  <div class="impact">
+    <h3>🌍 Community Impact</h3>
+    <div class="impact-stats">
+      <div class="impact-box">📌 23<br><small>Total Reports</small></div>
+      <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
+      <div class="impact-box">✅ 18<br><small>Resolved</small></div>
+    </div>
+  </div>
+
+  <footer>
+    <button onclick="window.location.href='home.html'">🏠 Home</button>
+    <button onclick="window.location.href='report.html'">📝 Report</button>
+    <button onclick="window.location.href='maps.html'">🗺 Maps</button>
+    <button onclick="logout()">🚪 Logout</button>
+  </footer>
 
   <script>
-    // Center of Jharkhand
-    const jharkhandCenter = [23.6102, 85.2799];
-    const map = L.map('map').setView(jharkhandCenter, 6);
+  // Logout function
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("username"); // ✅ also remove username
+    window.location.href = "index.html";
+  }
 
-    // Free OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+  // Show user details
+  const userName = localStorage.getItem("username") || "Guest";
+  document.getElementById("userName").textContent = userName;
+</script>
 
-    // Marker for Jharkhand center
-    L.marker(jharkhandCenter).addTo(map).bindPopup("Jharkhand (approx center)");
-
-    // Try to get user's current location automatically
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        const acc = pos.coords.accuracy;
-
-        L.marker([lat, lon]).addTo(map).bindPopup("📍 You are here").openPopup();
-        L.circle([lat, lon], { radius: acc }).addTo(map);
-
-        map.setView([lat, lon], 13);
-      },
-      err => {
-        alert("Could not fetch your location: " + err.message);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  </script>
 </body>
 </html>
