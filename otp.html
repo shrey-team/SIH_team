@@ -58,10 +58,8 @@
 
     const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co'
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'
-    const supabase = createClient(
-  'https://xnqtjcovuqzajuqzaunf.supabase.co', 
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'
-)
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
     // Get registration data from URL params
     const params = new URLSearchParams(window.location.search)
     const username = params.get("username")
@@ -71,33 +69,50 @@
 
     document.getElementById("verifyBtn").onclick = async () => {
       const enteredOtp = document.getElementById("otpInput").value.trim()
+      const otpError = document.getElementById("otpError")
+      otpError.style.display = "none"
 
-      const response = await fetch("https://xnqtjcovuqzajuqzaunf.functions.supabase.co/verify-otp", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-  "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM"
-},
-        body: JSON.stringify({ phone: phone, otp: enteredOtp })
-      })
+      // Validate OTP format
+      if (!/^\d{6}$/.test(enteredOtp)) {
+        otpError.innerText = "❌ OTP must be 6 digits."
+        otpError.style.display = "block"
+        return
+      }
 
-      const result = await response.json()
+      try {
+        // Verify OTP via Supabase Edge Function
+        const response = await fetch("https://xnqtjcovuqzajuqzaunf.functions.supabase.co/verify-otp", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + SUPABASE_ANON_KEY
+          },
+          body: JSON.stringify({ phone: phone, otp: enteredOtp })
+        })
 
-      if (result.success) {
-        // ✅ Save user to Supabase registrations table
-        const { error } = await supabase.from("registrations").insert([
-          { username, password, aadhar: aadhaar, phone }
-        ])
+        const result = await response.json()
 
-        if (!error) {
-          alert("🎉 Registration complete! You can now login.")
-          window.location.href = "index.html"
+        if (result.success) {
+          // Save user to Supabase registrations table
+          const { error } = await supabase.from("registrations").insert([
+            { username, password, aadhaar, phone }
+          ])
+
+          if (!error) {
+            alert("🎉 Registration complete! You can now login.")
+            window.location.href = "index.html"
+          } else {
+            console.error(error)
+            alert("⚠ Error saving user.")
+          }
         } else {
-          console.error(error)
-          alert("⚠ Error saving user.")
+          otpError.innerText = "❌ Invalid OTP. Try again."
+          otpError.style.display = "block"
         }
-      } else {
-        document.getElementById("otpError").style.display = "block"
+      } catch (err) {
+        console.error(err)
+        otpError.innerText = "⚠ Something went wrong. Try again."
+        otpError.style.display = "block"
       }
     }
   </script>
