@@ -43,7 +43,6 @@
       margin-bottom: 0.5rem;
     }
 
-    /* Issue Grid full width */
     .issue-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -115,8 +114,8 @@
     }
 
     header {
-        font-size: xx-large;
-        font-weight: 900;
+      font-size: xx-large;
+      font-weight: 900;
     }
 
     footer {
@@ -141,15 +140,35 @@
     footer button:hover {
       background: rgba(255,255,255,0.25);
     }
+
+    #live-complaints-container {
+      margin: 2rem;
+    }
+
+    #complaint-list {
+      list-style: none;
+      padding: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      font-size: 1rem;
+      color: #222;
+    }
+
+    #complaint-list li {
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee;
+    }
   </style>
 </head>
 <body>
-<script>
-  if (localStorage.getItem("loggedIn") !== "true") {
-    // If not logged in, redirect to login page
-    window.location.href = "index.html";
-  }
-</script>
+  <script>
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "index.html";
+    }
+  </script>
 
   <header>
     CivicRevolution
@@ -163,23 +182,23 @@
 
   <div class="issue-grid">
     <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
+      <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole" />
       🚧 Pothole
     </div>
     <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
+      <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage" />
       🗑 Garbage
     </div>
     <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
+      <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light" />
       💡 Street Light
     </div>
     <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
+      <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage" />
       💧 Water Leakage
     </div>
     <div class="card" onclick="window.location.href='report.html'">
-      <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
+      <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues" />
       ⚠ Other
     </div>
   </div>
@@ -187,10 +206,15 @@
   <div class="impact">
     <h3>🌍 Community Impact</h3>
     <div class="impact-stats">
-      <div class="impact-box">📌 23<br><small>Total Reports</small></div>
-      <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
-      <div class="impact-box">✅ 18<br><small>Resolved</small></div>
+      <div class="impact-box">📌 23<br /><small>Total Reports</small></div>
+      <div class="impact-box">⏳ 12<br /><small>In Progress</small></div>
+      <div class="impact-box">✅ 18<br /><small>Resolved</small></div>
     </div>
+  </div>
+
+  <div id="live-complaints-container">
+    <h3>New Complaints (live):</h3>
+    <ul id="complaint-list"></ul>
   </div>
 
   <footer>
@@ -201,17 +225,44 @@
   </footer>
 
   <script>
-  // Logout function
-  function logout() {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username"); // ✅ also remove username
-    window.location.href = "index.html";
-  }
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("username");
+      window.location.href = "index.html";
+    }
 
-  // Show user details
-  const userName = localStorage.getItem("username") || "Guest";
-  document.getElementById("userName").textContent = userName;
-</script>
+    const userName = localStorage.getItem("username") || "Guest";
+    document.getElementById("userName").textContent = userName;
+  </script>
 
+  <!-- ✅ Fixed Supabase Import -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = supabase;
+
+    const supabaseClient = createClient(
+      'https://xnqtjcovuqzajuqzaunf.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM'
+    );
+
+    const channel = supabaseClient.channel('complaints-realtime');
+
+    channel.on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'complaints' },
+      (payload) => {
+        const ul = document.getElementById('complaint-list');
+        const li = document.createElement('li');
+        li.textContent = `${payload.new.issue_type}: ${payload.new.description}`;
+        li.style.padding = '6px 12px';
+        li.style.borderBottom = '1px solid #ddd';
+        ul.prepend(li);
+
+        if (ul.children.length > 50) {
+          ul.removeChild(ul.lastChild);
+        }
+      }
+    ).subscribe();
+  </script>
 </body>
 </html>
