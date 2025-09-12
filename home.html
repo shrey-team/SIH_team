@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,11 +25,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     }
 
     .profile-btn {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       border: none;
       padding: 0.6rem 1rem;
       border-radius: 8px;
@@ -46,7 +47,7 @@
       text-align: center;
       border-radius: 12px;
       margin: 1rem 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .hero h2 {
@@ -70,7 +71,7 @@
       font-size: 1.3rem;
       font-weight: 600;
       border: 1px solid #e2e8f0;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
       cursor: pointer;
       transition: 0.25s;
       display: flex;
@@ -97,7 +98,7 @@
       border-radius: 12px;
       margin: 1rem 2rem 2rem;
       text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .impact h3 {
@@ -133,7 +134,7 @@
     }
 
     footer button {
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       border: none;
       padding: 0.8rem 1.4rem;
       border-radius: 8px;
@@ -144,7 +145,7 @@
     }
 
     footer button:hover {
-      background: rgba(255,255,255,0.25);
+      background: rgba(255, 255, 255, 0.25);
     }
 
     /* ✅ Profile Drawer */
@@ -156,7 +157,7 @@
       max-width: 400px;
       height: 100%;
       background: #fff;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
       transform: translateX(-100%);
       transition: transform 0.3s ease;
       z-index: 1000;
@@ -201,15 +202,16 @@
     }
   </style>
 </head>
+
 <body>
-<script>
-  if (localStorage.getItem("loggedIn") !== "true") {
-    window.location.href = "index.html";
-  }
-</script>
+  <script>
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "index.html";
+    }
+  </script>
 
   <header>
-    <button class="profile-btn" onclick="toggleProfile()" id="profileBtn">👤</button>
+    <button class="profile-btn" id="profileBtn">👤</button>
     CivicRevolution
     <span>Empowering Citizens</span>
   </header>
@@ -261,8 +263,8 @@
     </div>
     <div class="profile-section">
       <p><b>Username:</b> <span id="profileName"></span></p>
-      <p><b>Email:</b> <span id="profileEmail">user@example.com</span></p>
-      <p><b>Join Date:</b> <span id="profileJoin">2025-01-01</span></p>
+      <p><b>Email:</b> <span id="profileEmail"></span></p>
+      <p><b>Phone:</b> <span id="profilePhone"></span></p>
     </div>
 
     <hr>
@@ -286,77 +288,116 @@
     <h3>⚙ Settings</h3>
     <div class="profile-section">
       <input type="text" id="newUsername" placeholder="Enter new username">
-      <button onclick="changeUsername()">✏️ Change Username</button>
+      <button onclick="changeUsername()">✏ Change Username</button>
       <br>
       <input type="password" id="newPassword" placeholder="Enter new password">
       <button onclick="changePassword()">🔑 Change Password</button>
     </div>
 
     <hr>
-    <button onclick="logout()">🚪 Logout</button>
+    <button id="profileLogoutBtn">🚪 Logout</button>
   </div>
 
   <footer>
     <button onclick="window.location.href='home.html'">🏠 Home</button>
     <button onclick="window.location.href='report.html'">📝 Report</button>
     <button onclick="window.location.href='maps.html'">🗺 Maps</button>
-    <button onclick="logout()">🚪 Logout</button>
+    <button id="logoutBtn">🚪 Logout</button>
   </footer>
 
-  <script>
-  function logout() {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username");
-    window.location.href = "index.html";
-  }
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const userName = localStorage.getItem("username") || "Guest";
-  document.getElementById("userName").textContent = userName;
-  document.getElementById("profileName").textContent = userName;
+    const userName = localStorage.getItem("username") || "Guest";
+    const userEmail = localStorage.getItem("email") || "";
+    const userPhone = localStorage.getItem("phone") || "";
+    const userId = localStorage.getItem("userId");
 
-  // ✅ Profile button shows first letter
-  const profileBtn = document.getElementById("profileBtn");
-  if (userName && userName !== "Guest") {
-    profileBtn.textContent = userName.charAt(0).toUpperCase();
-  } else {
-    profileBtn.textContent = "👤";
-  }
+    document.getElementById("userName").textContent = userName;
+    document.getElementById("profileName").textContent = userName;
 
-  function toggleProfile() {
-    document.getElementById("profilePanel").classList.toggle("active");
-  }
+    // ✅ Show email + phone from localStorage if available
+    if (userEmail) {
+      document.getElementById("profileEmail").textContent = userEmail;
+    }
+    if (userPhone) {
+      document.getElementById("profilePhone").textContent = userPhone;
+    }
 
-  // ✅ Close profile panel when clicking outside
-  document.addEventListener("click", function(e) {
-    const profile = document.getElementById("profilePanel");
-    const profileBtn = document.querySelector(".profile-btn");
-    if (profile.classList.contains("active")) {
-      if (!profile.contains(e.target) && !profileBtn.contains(e.target)) {
-        profile.classList.remove("active");
+    // ✅ Profile button shows first letter
+    const profileBtn = document.getElementById("profileBtn");
+    if (userName && userName !== "Guest") {
+      profileBtn.textContent = userName.charAt(0).toUpperCase();
+    } else {
+      profileBtn.textContent = "👤";
+    }
+
+    function toggleProfile() {
+      document.getElementById("profilePanel").classList.toggle("active");
+    }
+
+    document.getElementById("profileBtn").addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggleProfile();
+    });
+
+    document.addEventListener("click", function (e) {
+      const profile = document.getElementById("profilePanel");
+      if (profile.classList.contains("active")) {
+        if (!profile.contains(e.target) && !profileBtn.contains(e.target)) {
+          profile.classList.remove("active");
+        }
+      }
+    });
+
+    function changeUsername() {
+      const newUsername = document.getElementById("newUsername").value.trim();
+      if (newUsername) {
+        localStorage.setItem("username", newUsername);
+        document.getElementById("userName").textContent = newUsername;
+        document.getElementById("profileName").textContent = newUsername;
+        profileBtn.textContent = newUsername.charAt(0).toUpperCase();
+        alert("Username updated!");
       }
     }
-  });
 
-  // ✅ Change Username
-  function changeUsername() {
-    const newUsername = document.getElementById("newUsername").value.trim();
-    if (newUsername) {
-      localStorage.setItem("username", newUsername);
-      document.getElementById("userName").textContent = newUsername;
-      document.getElementById("profileName").textContent = newUsername;
-      profileBtn.textContent = newUsername.charAt(0).toUpperCase();
-      alert("Username updated!");
+    function changePassword() {
+      const newPassword = document.getElementById("newPassword").value.trim();
+      if (newPassword) {
+        alert("Password changed successfully! (demo only)");
+      }
     }
-  }
 
-  // ✅ Change Password (just demo, no backend yet)
-  function changePassword() {
-    const newPassword = document.getElementById("newPassword").value.trim();
-    if (newPassword) {
-      alert("Password changed successfully! (demo only)");
+    // ✅ Fetch Email + Phone from Supabase if userId exists
+    if (userId) {
+      (async () => {
+        const { data, error } = await supabase
+          .from("registrations")
+          .select("email, phone")
+          .eq("id", userId)
+          .single();
+
+        if (!error && data) {
+          document.getElementById("profileEmail").textContent = data.email || userEmail || "N/A";
+          document.getElementById("profilePhone").textContent = data.phone || userPhone || "N/A";
+          localStorage.setItem("phone", data.phone || "");
+        }
+      })();
     }
-  }
+
+    // ✅ Logout buttons using IDs
+    const logoutButtons = [document.getElementById("logoutBtn"), document.getElementById("profileLogoutBtn")];
+    logoutButtons.forEach(btn => {
+      btn?.addEventListener("click", () => {
+        localStorage.clear(); // Clear all saved user data
+        window.location.href = "index.html"; // Redirect to login page
+      });
+    });
   </script>
 
 </body>
+
 </html>
