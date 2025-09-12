@@ -28,19 +28,14 @@
     }
 
     .profile-btn {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.2);
       border: none;
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1rem;
       border-radius: 8px;
       color: #fff;
-      font-size: 1rem;
+      font-size: 1.2rem;
       cursor: pointer;
-      transition: 0.2s;
       margin-right: 1rem;
-    }
-
-    .profile-btn:hover {
-      background: rgba(255,255,255,0.3);
     }
 
     .hero {
@@ -59,7 +54,6 @@
       margin-bottom: 0.5rem;
     }
 
-    /* Issue Grid full width */
     .issue-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -153,31 +147,57 @@
       background: rgba(255,255,255,0.25);
     }
 
-    /* Profile Panel */
-    #profilePanel {
-      display: none;
-      margin: 1rem 2rem;
-    }
-
-    .section {
+    /* ✅ Profile Drawer */
+    .profile-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 50%;
+      max-width: 400px;
+      height: 100%;
       background: #fff;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .section h2 {
-      color: #0a3d62;
-      margin-bottom: 1rem;
-    }
-
-    .box {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
       padding: 1rem;
-      margin-bottom: 0.8rem;
+      overflow-y: auto;
+    }
+
+    .profile-panel.active {
+      transform: translateX(0);
+    }
+
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .profile-section {
+      margin: 1rem 0;
+    }
+
+    .profile-section input {
+      width: 100%;
+      padding: 0.5rem;
+      margin: 0.3rem 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .profile-section button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      border: none;
+      background: #0a3d62;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .profile-section button:hover {
+      background: #07406e;
     }
   </style>
 </head>
@@ -189,19 +209,17 @@
 </script>
 
   <header>
-    <div style="display:flex;align-items:center;">
-      <button class="profile-btn" onclick="toggleProfile()">👤 Profile</button>
-      CivicRevolution
-    </div>
+    <button class="profile-btn" onclick="toggleProfile()" id="profileBtn">👤</button>
+    CivicRevolution
     <span>Empowering Citizens</span>
   </header>
 
-  <div id="homeContent">
-    <div class="hero">
-      <h2>Welcome👋 <span id="userName"></span></h2>
-      <p>Report issues, track progress, and make your community stronger 💪</p>
-    </div>
+  <div class="hero">
+    <h2>Welcome👋 <span id="userName"></span></h2>
+    <p>Report issues, track progress, and make your community stronger 💪</p>
+  </div>
 
+  <div id="homeContent">
     <div class="issue-grid">
       <div class="card" onclick="window.location.href='report.html'">
         <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
@@ -235,36 +253,47 @@
     </div>
   </div>
 
-  <!-- Profile / Dashboard Panel -->
-  <div id="profilePanel">
-    <div class="section">
+  <!-- ✅ Profile Drawer -->
+  <div id="profilePanel" class="profile-panel">
+    <div class="profile-header">
       <h2>👤 Profile</h2>
-      <div class="box">Username: <span id="profileName"></span></div>
-      <div class="box">Email: <span id="profileEmail">user@example.com</span></div>
-      <div class="box">Join Date: <span id="profileJoin">2025-01-01</span></div>
+      <button onclick="toggleProfile()">❌</button>
+    </div>
+    <div class="profile-section">
+      <p><b>Username:</b> <span id="profileName"></span></p>
+      <p><b>Email:</b> <span id="profileEmail">user@example.com</span></p>
+      <p><b>Join Date:</b> <span id="profileJoin">2025-01-01</span></p>
     </div>
 
-    <div class="section">
-      <h2>📝 My Reports</h2>
-      <div class="box">Report list will come here…</div>
+    <hr>
+    <h3>📝 My Reports</h3>
+    <ul>
+      <li>🚧 Pothole – ⏳ Pending</li>
+      <li>🗑 Garbage – 🔧 In Progress</li>
+      <li>💡 Street Light – ✅ Resolved</li>
+    </ul>
+
+    <hr>
+    <h3>📌 Statistics</h3>
+    <p>Total: 3 | ⏳ Pending: 1 | 🔧 In Progress: 1 | ✅ Resolved: 1</p>
+
+    <hr>
+    <h3>🔔 Notifications</h3>
+    <p>✅ Street light issue resolved.</p>
+    <p>⏳ Garbage collection in progress.</p>
+
+    <hr>
+    <h3>⚙ Settings</h3>
+    <div class="profile-section">
+      <input type="text" id="newUsername" placeholder="Enter new username">
+      <button onclick="changeUsername()">✏️ Change Username</button>
+      <br>
+      <input type="password" id="newPassword" placeholder="Enter new password">
+      <button onclick="changePassword()">🔑 Change Password</button>
     </div>
 
-    <div class="section">
-      <h2>📌 Report Statistics</h2>
-      <div class="box">📌 Total: 3 | ⏳ Pending: 1 | 🔧 In Progress: 1 | ✅ Resolved: 1</div>
-    </div>
-
-    <div class="section">
-      <h2>🔔 Notifications</h2>
-      <div class="box">✅ Example: Street light fixed.</div>
-    </div>
-
-    <div class="section">
-      <h2>⚙ Settings</h2>
-      <div class="box">🔑 Change Password</div>
-      <div class="box">🔔 Notification Preferences</div>
-      <button onclick="logout()">🚪 Logout</button>
-    </div>
+    <hr>
+    <button onclick="logout()">🚪 Logout</button>
   </div>
 
   <footer>
@@ -285,31 +314,48 @@
   document.getElementById("userName").textContent = userName;
   document.getElementById("profileName").textContent = userName;
 
-  function toggleProfile() {
-    const home = document.getElementById("homeContent");
-    const profile = document.getElementById("profilePanel");
-    if (profile.style.display === "none" || profile.style.display === "") {
-      profile.style.display = "block";
-      home.style.display = "none";
-    } else {
-      profile.style.display = "none";
-      home.style.display = "block";
-    }
+  // ✅ Profile button shows first letter
+  const profileBtn = document.getElementById("profileBtn");
+  if (userName && userName !== "Guest") {
+    profileBtn.textContent = userName.charAt(0).toUpperCase();
+  } else {
+    profileBtn.textContent = "👤";
   }
-    // ✅ Close profile panel when clicking outside
+
+  function toggleProfile() {
+    document.getElementById("profilePanel").classList.toggle("active");
+  }
+
+  // ✅ Close profile panel when clicking outside
   document.addEventListener("click", function(e) {
     const profile = document.getElementById("profilePanel");
-    const home = document.getElementById("homeContent");
     const profileBtn = document.querySelector(".profile-btn");
-
-    if (profile && profile.style.display === "block") {
+    if (profile.classList.contains("active")) {
       if (!profile.contains(e.target) && !profileBtn.contains(e.target)) {
-        profile.style.display = "none";
-        home.style.display = "block";
+        profile.classList.remove("active");
       }
     }
   });
 
+  // ✅ Change Username
+  function changeUsername() {
+    const newUsername = document.getElementById("newUsername").value.trim();
+    if (newUsername) {
+      localStorage.setItem("username", newUsername);
+      document.getElementById("userName").textContent = newUsername;
+      document.getElementById("profileName").textContent = newUsername;
+      profileBtn.textContent = newUsername.charAt(0).toUpperCase();
+      alert("Username updated!");
+    }
+  }
+
+  // ✅ Change Password (just demo, no backend yet)
+  function changePassword() {
+    const newPassword = document.getElementById("newPassword").value.trim();
+    if (newPassword) {
+      alert("Password changed successfully! (demo only)");
+    }
+  }
   </script>
 
 </body>
