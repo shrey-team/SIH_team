@@ -259,7 +259,8 @@
   <div id="profilePanel" class="profile-panel">
     <div class="profile-header">
       <h2>👤 Profile</h2>
-      <button onclick="toggleProfile()">❌</button>
+      <!-- 🔥 This calls the global function -->
+      <button onclick="closeProfile()">❌</button>
     </div>
     <div class="profile-section">
       <p><b>Username:</b> <span id="profileName"></span></p>
@@ -283,16 +284,6 @@
     <h3>🔔 Notifications</h3>
     <p>✅ Street light issue resolved.</p>
     <p>⏳ Garbage collection in progress.</p>
-
-    <hr>
-    <h3>⚙ Settings</h3>
-    <div class="profile-section">
-      <input type="text" id="newUsername" placeholder="Enter new username">
-      <button onclick="changeUsername()">✏ Change Username</button>
-      <br>
-      <input type="password" id="newPassword" placeholder="Enter new password">
-      <button onclick="changePassword()">🔑 Change Password</button>
-    </div>
 
     <hr>
     <button id="profileLogoutBtn">🚪 Logout</button>
@@ -339,6 +330,15 @@
       document.getElementById("profilePanel").classList.toggle("active");
     }
 
+    // ✅ New closeProfile function
+    function closeProfile() {
+      document.getElementById("profilePanel").classList.remove("active");
+    }
+
+    // --- IMPORTANT: expose to global scope so inline onclick can find them ---
+    window.closeProfile = closeProfile;
+    window.toggleProfile = toggleProfile;
+
     document.getElementById("profileBtn").addEventListener("click", function (e) {
       e.stopPropagation();
       toggleProfile();
@@ -352,24 +352,6 @@
         }
       }
     });
-
-    function changeUsername() {
-      const newUsername = document.getElementById("newUsername").value.trim();
-      if (newUsername) {
-        localStorage.setItem("username", newUsername);
-        document.getElementById("userName").textContent = newUsername;
-        document.getElementById("profileName").textContent = newUsername;
-        profileBtn.textContent = newUsername.charAt(0).toUpperCase();
-        alert("Username updated!");
-      }
-    }
-
-    function changePassword() {
-      const newPassword = document.getElementById("newPassword").value.trim();
-      if (newPassword) {
-        alert("Password changed successfully! (demo only)");
-      }
-    }
 
     // ✅ Fetch Email + Phone from Supabase if userId exists
     if (userId) {
