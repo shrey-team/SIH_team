@@ -189,6 +189,13 @@
                 localStorage.setItem("phone", inserted.phone);
                 localStorage.setItem("loggedIn", "true");
 
+                // ✅ new object storing
+                localStorage.setItem("loggedInUser", JSON.stringify({
+                    username: inserted.username,
+                    email: inserted.email
+                }));
+
+
                 alert("✅ Registration Successful! You are now logged in.");
                 window.location.href = "home.html";
 
@@ -223,6 +230,13 @@
                 localStorage.setItem("username", data.username);
                 localStorage.setItem("email", data.email);
                 localStorage.setItem("phone", data.phone);
+
+                // ✅ new object storing
+                localStorage.setItem("loggedInUser", JSON.stringify({
+                    username: data.username,
+                    email: data.email
+                }));
+
                 window.location.href = "home.html";
             } else {
                 document.getElementById("loginError").innerText = "❌ Invalid username or password.";
