@@ -169,7 +169,7 @@
             <label for="location_text">Address or landmark</label>
             <input type="text" id="location_text" placeholder="Enter location or landmark" required />
 
-            <!-- ✅ New Pincode field -->
+            <!-- ✅ Pincode field -->
             <label for="pincode">Pincode</label>
             <input type="text" id="pincode" placeholder="Enter pincode" required />
 
@@ -212,7 +212,7 @@
                 document.getElementById('longitude').value = lng;
                 if (marker) map.removeLayer(marker);
                 marker = L.marker([lat, lng]).addTo(map);
-                reverseGeocode(lat, lng); // ✅ fill address/pincode
+                reverseGeocode(lat, lng);
             });
         }
         window.addEventListener('load', initMap);
@@ -232,13 +232,13 @@
                     map.setView([lat, lng], 15);
                     if (marker) map.removeLayer(marker);
                     marker = L.marker([lat, lng]).addTo(map);
-                    reverseGeocode(lat, lng); // ✅ fill address/pincode
+                    reverseGeocode(lat, lng);
                 },
                 (err) => alert('Location error: ' + err.message)
             );
         };
 
-        // Drag & Drop Photo for multiple files
+        // Drag & Drop Photo
         const dropZone = document.getElementById('dropZone');
         const fileInput = document.getElementById('photo');
         const previewContainer = document.getElementById('previewContainer');
@@ -288,7 +288,7 @@
             });
         }
 
-        // Extract GPS from first image using EXIF
+        // Extract GPS from EXIF
         function extractGPS(file) {
             EXIF.getData(file, function () {
                 const lat = EXIF.getTag(this, "GPSLatitude");
@@ -304,12 +304,12 @@
                     map.setView([latitude, longitude], 15);
                     if (marker) map.removeLayer(marker);
                     marker = L.marker([latitude, longitude]).addTo(map);
-                    reverseGeocode(latitude, longitude); // ✅ fill address/pincode
+                    reverseGeocode(latitude, longitude);
                 }
             });
         }
 
-        // ✅ Reverse geocode to fill address and pincode
+        // Reverse geocode
         async function reverseGeocode(lat, lng) {
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
@@ -363,6 +363,34 @@
                 return;
             }
 
+            // ✅ Get logged-in user from localStorage
+            const savedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+            if (!savedUser || !savedUser.username) {
+                alert("❌ Not logged in!");
+                window.location.href = "index.html";
+                return;
+            }
+
+            // ✅ Fetch registration_number
+            let registration_number = null;
+            try {
+                const { data, error } = await supabase
+                    .from("registrations")
+                    .select("registration_number")
+                    .eq("username", savedUser.username)
+                    .single();
+
+                if (error || !data) {
+                    alert("❌ Could not fetch your registration ID");
+                    console.error(error);
+                    return;
+                }
+                registration_number = data.registration_number;
+            } catch (err) {
+                console.error("Error fetching registration_number:", err);
+                return;
+            }
+
             let image_urls = [];
             if (selectedFiles.length > 0) image_urls = await uploadImages(selectedFiles);
 
@@ -372,9 +400,10 @@
                     description: desc,
                     image_urls,
                     location_text,
-                    pincode, // ✅ added
+                    pincode,
                     latitude: lat,
                     longitude: lng,
+                    registration_number, // ✅ foreign key
                     created_at: new Date().toISOString(),
                 },
             ]);
@@ -391,4 +420,5 @@
         document.getElementById('reportForm').addEventListener('submit', submitReport);
     </script>
 </body>
+
 </html>
