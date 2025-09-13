@@ -185,12 +185,16 @@
       <textarea id="desc" placeholder="Explain the issue..." required></textarea>
 
       <label for="photo">Upload Photos (multiple)</label>
-      <!-- ✅ allow both camera and gallery -->
+      <!-- ✅ Gallery / multiple -->
       <input type="file" id="photo" accept="image/*" hidden multiple />
       <div class="drop-zone" id="dropZone">
         Drag & drop photos here or click to select
         <div id="previewContainer" class="preview"></div>
       </div>
+
+      <!-- ✅ Real-time camera option -->
+      <button type="button" id="cameraBtn">📷 Take Photo</button>
+      <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden />
 
       <label for="location_text">Address or landmark</label>
       <input type="text" id="location_text" placeholder="Enter location or landmark" required />
@@ -293,6 +297,21 @@
         const newFiles = Array.from(e.dataTransfer.files);
         selectedFiles = selectedFiles.concat(newFiles);
         fileInput.files = e.dataTransfer.files;
+        showPreviews(selectedFiles);
+        extractGPS(newFiles[0]);
+      }
+    });
+
+    // ✅ Real-time camera handling
+    const cameraInput = document.getElementById("cameraInput");
+    const cameraBtn = document.getElementById("cameraBtn");
+
+    cameraBtn.addEventListener("click", () => cameraInput.click());
+
+    cameraInput.addEventListener("change", () => {
+      if (cameraInput.files.length) {
+        const newFiles = Array.from(cameraInput.files);
+        selectedFiles = selectedFiles.concat(newFiles);
         showPreviews(selectedFiles);
         extractGPS(newFiles[0]);
       }
