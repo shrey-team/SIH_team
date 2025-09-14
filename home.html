@@ -457,8 +457,6 @@
     </div>
   </header>
 
-
-
   <div class="container">
     <div class="hero">
       <h2>Welcome 👋 <span id="userName">Guest</span></h2>
@@ -491,10 +489,18 @@
     <div class="impact">
       <h3>🌍 Community Impact Dashboard</h3>
       <div class="impact-stats">
-        <div class="impact-box">📊 <span id="totalReports">247</span><br><small class="small">Total Reports</small>
+        <div class="impact-box">
+          📊 <span id="totalReports">247</span><br>
+          <small class="small">Total Reports</small>
         </div>
-        <div class="impact-box">⏳ <span id="inProgress">89</span><br><small class="small">In Progress</small></div>
-        <div class="impact-box">✅ <span id="resolved">158</span><br><small class="small">Resolved</small></div>
+        <div class="impact-box">
+          ⏳ <span id="inProgress">89</span><br>
+          <small class="small">In Progress</small>
+        </div>
+        <div class="impact-box">
+          ✅ <span id="resolved">158</span><br>
+          <small class="small">Resolved</small>
+        </div>
       </div>
     </div>
   </div>
@@ -526,9 +532,7 @@
 
   <!-- Supabase + app logic -->
   <script type="module">
-    // --- Supabase client (using your earlier provided project) ---
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
     const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -541,7 +545,6 @@
           .select('username, email, phone')
           .eq('id', userId)
           .single();
-
         if (error) {
           console.warn('Supabase fetch error:', error);
           return null;
@@ -553,12 +556,10 @@
       }
     }
 
-    // Expose fetch method so non-module code could call if needed (not required)
     window._fetchUserFromSupabase = fetchUserFromSupabase;
   </script>
 
   <script>
-    // Immediately populate UI from localStorage so UI changes are visible even before Supabase fetch.
     const userNameEl = document.getElementById('userName');
     const profileNameEl = document.getElementById('profileName');
     const profileEmailEl = document.getElementById('profileEmail');
@@ -570,7 +571,6 @@
     const footerLogout = document.getElementById('footerLogout');
     const logo = document.getElementById('logo');
 
-    // Load from localStorage (fallbacks)
     const localName = localStorage.getItem('username') || localStorage.getItem('userName') || 'Guest';
     const localEmail = localStorage.getItem('email') || '';
     const localPhone = localStorage.getItem('phone') || '';
@@ -581,14 +581,12 @@
     profileEmailEl.textContent = localEmail || 'N/A';
     profilePhoneEl.textContent = localPhone || 'N/A';
 
-    // show first letter on profile button
     if (localName && localName !== 'Guest') {
       profileBtn.textContent = localName.charAt(0).toUpperCase();
     } else {
       profileBtn.textContent = '👤';
     }
 
-    // open/close handlers
     function openProfile() {
       profilePanel.classList.add('open');
       profilePanel.setAttribute('aria-hidden', 'false');
@@ -597,11 +595,14 @@
       profilePanel.classList.remove('open');
       profilePanel.setAttribute('aria-hidden', 'true');
     }
-    profileBtn.addEventListener('click', (e) => { e.stopPropagation(); openProfile(); });
+
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProfile();
+    });
     closeProfileBtn.addEventListener('click', hideProfile);
     logo.addEventListener('click', () => openProfile());
 
-    // click outside to close
     document.addEventListener('click', (e) => {
       if (profilePanel.classList.contains('open')) {
         const inside = profilePanel.contains(e.target) || profileBtn.contains(e.target) || logo.contains(e.target);
@@ -609,38 +610,30 @@
       }
     });
 
-    // Logout logic (both in panel and footer)
     function doLogout() {
       localStorage.removeItem('loggedIn');
       localStorage.removeItem('userId');
       localStorage.removeItem('username');
       localStorage.removeItem('email');
       localStorage.removeItem('phone');
-      // redirect to login (index.html)
       window.location.href = 'index.html';
     }
     profileLogout.addEventListener('click', doLogout);
     footerLogout.addEventListener('click', doLogout);
 
-    // make cards navigate to report page
     document.querySelectorAll('.card').forEach(card => {
       card.addEventListener('click', () => {
         const issue = card.dataset.issue || 'Other';
         window.location.href = `report.html?issue=${encodeURIComponent(issue)}`;
-
-
       });
     });
 
-    // Try to fetch fresh user data from Supabase (if available). This uses the module script's exported function.
     (async function refreshFromSupabase() {
       try {
-        if (!userId) return; // nothing to fetch
-        // call the module's function (which is attached to window in the module script)
+        if (!userId) return;
         if (typeof window._fetchUserFromSupabase === 'function') {
           const supaData = await window._fetchUserFromSupabase(userId);
           if (supaData) {
-            // update UI + localStorage with authoritative values
             const name = supaData.username || supaData.name || localName;
             const email = supaData.email || localEmail;
             const phone = supaData.phone || localPhone;
@@ -651,7 +644,6 @@
             localStorage.setItem('username', name || '');
             localStorage.setItem('email', email || '');
             localStorage.setItem('phone', phone || '');
-            // update profile button letter
             profileBtn.textContent = (name && name !== 'Guest') ? name.charAt(0).toUpperCase() : '👤';
           }
         }
@@ -660,7 +652,6 @@
       }
     })();
 
-    // Parallax effect on header
     window.addEventListener('scroll', () => {
       const scrolled = window.pageYOffset;
       const header = document.querySelector('header');
@@ -668,11 +659,8 @@
         header.style.transform = `translateY(${scrolled * 0.5}px)`;
       }
     });
-
-
-    // If you want to test quickly: open browser console and run:
-    // localStorage.setItem('loggedIn','true'); localStorage.setItem('username','Akshat'); localStorage.setItem('userId','1'); location.reload();
   </script>
 </body>
+
 
 </html>
