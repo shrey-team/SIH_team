@@ -443,6 +443,150 @@
         height: 40px;
       }
     }
+
+    /* ====== Chatbot Styles ====== */
+    .chatbot-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      height: 55px;
+      width: 55px;
+      border-radius: 50%;
+      background: #007bff;
+      color: white;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 2000;
+    }
+
+    .chatbot {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 300px;
+      height: 400px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+      z-index: 2001;
+      flex-direction: column;
+      overflow: hidden;
+      animation: chatbot-pop 0.2s;
+    }
+
+    @keyframes chatbot-pop {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .chat_head {
+      background: #1976d2;
+      color: #fff;
+      padding: 1rem 1.5rem 1rem 1rem;
+      display: flex;
+      align-items: center;
+      position: relative;
+      min-height: 56px;
+    }
+
+    .chat_head h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .close_btn {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      transition: color 0.2s;
+    }
+
+    .close_btn:hover {
+      color: #ff5252;
+    }
+
+    .chat_body {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      background: #f8fafd;
+      font-size: 1rem;
+      min-height: 120px;
+      max-height: 300px;
+    }
+
+    .user_message {
+      background: #007bff;
+      color: #fff;
+      margin: 8px 0 8px auto;
+      padding: 8px 14px;
+      border-radius: 16px 16px 4px 16px;
+      width: fit-content;
+      max-width: 80%;
+      font-size: 14px;
+    }
+
+    .bot_message {
+      background: #e3f0ff;
+      color: #222;
+      margin: 8px 0;
+      padding: 8px 14px;
+      border-radius: 16px 16px 16px 4px;
+      width: fit-content;
+      max-width: 80%;
+      font-size: 14px;
+    }
+
+    .chat_input_wrapper {
+      display: flex;
+      padding: 0.8em;
+      border-top: 1px solid #e0e0e0;
+      background: #f7f7f7;
+    }
+
+    .chat_input_wrapper input {
+      width: 75%;
+      padding: 0.6em;
+      border: 1px solid #c4c2c2;
+      border-radius: 0.5em;
+      font-size: 1rem;
+      resize: none;
+      max-height: 10rem;
+      margin-right: 0.5em;
+    }
+
+    .send_button {
+      width: 25%;
+      max-height: 40px;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      border-radius: 0.5em;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .send_button:hover {
+      background: #1251a3;
+    }
   </style>
 </head>
 
@@ -456,6 +600,22 @@
       <button id="profileBtn" class="profile-btn" title="Open profile">👤</button>
     </div>
   </header>
+
+  <!-- Chatbot -->
+  <div id="chatbot_container">
+    <button id="chatbot_icon" class="chatbot-icon">💬</button>
+    <div id="chatbot" class="chatbot">
+      <div class="chat_head">
+        <h3>Chatbot</h3>
+        <button id="closeChat" class="close_btn">&times;</button>
+      </div>
+      <div id="chatBody" class="chat_body"></div>
+      <div class="chat_input_wrapper">
+        <input id="chatInput" type="text" placeholder="Type your message..." />
+        <button id="sendBtn" class="send_button">Send</button>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     <div class="hero">
@@ -659,6 +819,172 @@
         header.style.transform = `translateY(${scrolled * 0.5}px)`;
       }
     });
+
+    // Chatbot logic (withdraw option removed)
+    document.addEventListener("DOMContentLoaded", function () {
+      const chatbotIcon = document.getElementById("chatbot_icon");
+      const chatbot = document.getElementById("chatbot");
+      const closeChat = document.getElementById("closeChat");
+      const sendBtn = document.getElementById("sendBtn");
+      const chatInput = document.getElementById("chatInput");
+      const chatBody = document.getElementById("chatBody");
+
+      let awaitingComplaintNumber = false;
+
+      chatbotIcon.addEventListener("click", () => {
+        chatbot.style.display = "flex";
+        chatBody.innerHTML = "";
+        addBotMessage("Hello! How can I help you today?");
+        showOptions();
+      });
+
+      closeChat.addEventListener("click", () => {
+        chatbot.style.display = "none";
+        awaitingComplaintNumber = false;
+      });
+
+      function addUserMessage(text) {
+        const msg = document.createElement("div");
+        msg.className = "user_message";
+        msg.textContent = text;
+        chatBody.appendChild(msg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      function addBotMessage(text) {
+        const msg = document.createElement("div");
+        msg.className = "bot_message";
+        msg.textContent = text;
+        chatBody.appendChild(msg);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      function showOptions() {
+        const options = [
+          { label: "Add Your Complaint", value: "add" },
+          { label: "Track Your Complaint", value: "track" },
+          { label: "Contact Our Executives", value: "contact" }
+        ];
+        const btnGroup = document.createElement("div");
+        btnGroup.style.display = "flex";
+        btnGroup.style.flexDirection = "column";
+        btnGroup.style.gap = "8px";
+        options.forEach(opt => {
+          const btn = document.createElement("button");
+          btn.textContent = opt.label;
+          btn.style.background = "#007bff";
+          btn.style.color = "#fff";
+          btn.style.border = "none";
+          btn.style.borderRadius = "8px";
+          btn.style.padding = "8px 0";
+          btn.style.fontSize = "14px";
+          btn.style.cursor = "pointer";
+          btn.onclick = () => handleOption(opt.value, btnGroup);
+          btnGroup.appendChild(btn);
+        });
+        chatBody.appendChild(btnGroup);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }
+
+      function handleOption(value, btnGroup) {
+        btnGroup.remove();
+        if (value === "add") {
+          addBotMessage("Redirecting you to the complaint form...");
+          setTimeout(() => window.location.href = "report.html", 1200);
+        } else if (value === "track") {
+          addBotMessage("Please enter your complaint number:");
+          awaitingComplaintNumber = true;
+        } else if (value === "contact") {
+          askContactDetails();
+        }
+      }
+
+      function askContactDetails() {
+        addBotMessage("Please enter your name and mobile number below:");
+        const form = document.createElement("div");
+        form.style.display = "flex";
+        form.style.flexDirection = "column";
+        form.style.gap = "6px";
+        form.style.margin = "8px 0";
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.placeholder = "Your Name";
+        nameInput.style.padding = "6px";
+        nameInput.style.borderRadius = "5px";
+        nameInput.style.border = "1px solid #ccc";
+        nameInput.style.fontSize = "13px";
+
+        const phoneInput = document.createElement("input");
+        phoneInput.type = "tel";
+        phoneInput.placeholder = "Mobile Number (10 digits)";
+        phoneInput.style.padding = "6px";
+        phoneInput.style.borderRadius = "5px";
+        phoneInput.style.border = "1px solid #ccc";
+        phoneInput.style.fontSize = "13px";
+
+        const submitBtn = document.createElement("button");
+        submitBtn.textContent = "Submit";
+        submitBtn.style.background = "#007bff";
+        submitBtn.style.color = "#fff";
+        submitBtn.style.border = "none";
+        submitBtn.style.borderRadius = "6px";
+        submitBtn.style.padding = "7px 0";
+        submitBtn.style.fontSize = "13px";
+        submitBtn.style.cursor = "pointer";
+
+        form.appendChild(nameInput);
+        form.appendChild(phoneInput);
+        form.appendChild(submitBtn);
+        chatBody.appendChild(form);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        submitBtn.onclick = () => {
+          const name = nameInput.value.trim();
+          const phone = phoneInput.value.trim();
+          if (!/^[a-zA-Z ]{4,}$/.test(name)) {
+            alert("Please enter a valid name.");
+            nameInput.focus();
+            return;
+          }
+          if (!/^\d{10}$/.test(phone)) {
+            alert("Please enter a valid 10 digit mobile number.");
+            phoneInput.focus();
+            return;
+          }
+          addUserMessage(`Name: ${name}`);
+          addUserMessage(`Mobile Number: ${phone}`);
+          form.remove();
+          addBotMessage("Thank you! Our executives will connect with you shortly.");
+          setTimeout(showOptions, 1000);
+        };
+      }
+
+      // ✅ Fixed closing braces here
+      sendBtn.addEventListener("click", () => {
+        const text = chatInput.value.trim();
+        if (!text) return;
+        addUserMessage(text);
+
+        if (awaitingComplaintNumber) {
+          addBotMessage(`Your complaint (${text}) has been processed and will be solved soon.`);
+          awaitingComplaintNumber = false;
+          setTimeout(showOptions, 1000);
+        }
+
+        chatInput.value = ""; // moved inside correctly
+      });
+
+      chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          sendBtn.click();
+        }
+      });
+
+      // Hide chatbot on load
+      chatbot.style.display = "none";
+    });
+
   </script>
 </body>
 
