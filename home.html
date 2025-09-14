@@ -2,384 +2,677 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CivicRevolution - Home</title>
   <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f2f4f8;
-      color: #2d3748;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgb(255, 255, 255);
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0deg);
+      }
+
+      33% {
+        transform: translateY(-30px) rotate(1deg);
+      }
+
+      66% {
+        transform: translateY(20px) rotate(-1deg);
+      }
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
     header {
-      background: #0a3d62;
-      padding: 1rem 2rem;
-      color: #fff;
-      font-size: 1.5rem;
-      font-weight: bold;
+      position: relative;
+
+      background:
+        linear-gradient(135deg, rgba(94, 57, 230, 0.85), rgba(168, 70, 198, 0.85)),
+        url('https://www.varsitytech.com/wp-content/uploads/2022/12/Screen-Shot-2022-12-07-at-11.10.13-AM.png') center/cover;
       display: flex;
+      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      color: #fff;
+      overflow: hidden;
+      height: 400px;
     }
 
-    .profile-btn {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 1.2rem;
-      cursor: pointer;
-      margin-right: 1rem;
+
+    header h2 {
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      font-size: 2.5rem;
+      color: white;
+    }
+
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      opacity: 0.15;
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%
+      }
+
+      50% {
+        background-position: 100% 50%
+      }
+
+      100% {
+        background-position: 0% 50%
+      }
+    }
+
+
+    .header-content {
+      text-align: center;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .logo-block {
+      text-align: center;
+
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #ff8a00, #e52e71);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .tagline {
+      margin-top: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.85);
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
     }
 
     .hero {
-      background: #ffffff;
-      font-size: x-large;
-      font-weight: bold;
-      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      margin: -60px auto 3rem auto;
+      /* less overlap so header movement is visible */
+      max-width: 1000px;
       text-align: center;
-      border-radius: 12px;
-      margin: 1rem 2rem;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      color: rgba(235, 10, 10, 0.682);
+      position: relative;
+      z-index: 2;
+      /* ensures hero stays above header */
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+      animation: slideIn 1s ease-out 0.3s both;
+    }
+
+
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(100px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
     }
 
     .hero h2 {
-      color: #0a3d62;
+      font-size: 2.2rem;
+      font-weight: 700;
       margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #c8343c, #310e23);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.9)
     }
 
     .issue-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 30px;
-      margin: 1.5rem 2rem;
-      flex-grow: 1;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      background-color: #95d2df;
+      gap: 1.5rem;
+      margin: 2rem;
+      padding: 0 1rem
     }
 
     .card {
-      background: #ffffff;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
       padding: 2rem;
-      border-radius: 15px;
       text-align: center;
-      font-size: 1.3rem;
-      font-weight: 600;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      color: #fff;
       cursor: pointer;
-      transition: 0.25s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .card img {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform .22s ease, filter .22s ease;
     }
 
     .card:hover {
-      transform: scale(1.02);
-      border-color: #0a3d62;
-      background: #f8fafc;
+      transform: translateY(-8px) scale(1.03);
+      filter: brightness(1.08)
+    }
+
+    .card1 {
+      background: rgba(241, 159, 159, 0.55)
+    }
+
+    .card2 {
+      background: rgb(179, 248, 162)
+    }
+
+    .card3 {
+      background: rgb(247, 248, 152)
+    }
+
+    .card4 {
+      background: rgb(162, 243, 247)
+    }
+
+    .card5 {
+      background: rgb(247, 185, 165)
+    }
+
+    .card-icon {
+      font-size: 3.6rem;
+      margin-bottom: 0.6rem;
+      display: block
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700
     }
 
     .impact {
-      background: #ffffff;
-      padding: 2rem;
-      border-radius: 12px;
-      margin: 1rem 2rem 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 24px;
+      padding: 2.5rem;
+      margin: 2rem;
       text-align: center;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      color: #000000
     }
 
     .impact h3 {
-      color: #0a3d62;
-      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #1dd1a1, #54a0ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
     }
 
     .impact-stats {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 1rem;
-      margin-top: 1rem;
+      margin-top: 1rem
     }
 
     .impact-box {
-      flex: 1;
-      min-width: 200px;
-      background: #f8fafc;
-      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1.4rem;
       border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      font-size: 1.2rem;
-      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      font-size: 1.3rem;
+      font-weight: 700
     }
 
     footer {
-      background: #0a3d62;
-      padding: 1rem;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 1.5rem;
       display: flex;
-      justify-content: space-around;
-      color: #fff;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap
     }
 
     footer button {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      padding: 0.8rem 1.4rem;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0.9rem 1.2rem;
+      border-radius: 10px;
       color: #fff;
-      font-size: 1rem;
+      cursor: pointer
+    }
+
+    /* profile button (visible) */
+    .profile-btn {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1.05rem;
       cursor: pointer;
-      transition: 0.2s;
+      z-index: 3;
     }
 
-    footer button:hover {
-      background: rgba(255, 255, 255, 0.25);
-    }
-
-    /* ✅ Profile Drawer */
+    /* ====== Profile Drawer (REPLACE your existing .profile-panel / .close-x rules with this) ====== */
     .profile-panel {
       position: fixed;
       top: 0;
-      left: 0;
-      width: 50%;
-      max-width: 400px;
+      right: -100%;
+      width: 100%;
       height: 100%;
+      max-width: 420px;
+      /* won't grow too wide on large screens */
       background: #fff;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-      padding: 1rem;
+      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.25);
+      transition: right .28s ease-in-out;
+      padding: 20px;
+      /* main padding */
+      padding-top: 64px;
+      /* important: push content below the close button */
+      box-sizing: border-box;
+      z-index: 1200;
       overflow-y: auto;
     }
 
-    .profile-panel.active {
-      transform: translateX(0);
+    /* open state */
+    .profile-panel.open {
+      right: 0;
     }
 
-    .profile-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    /* header title - give right padding so it never sits below the close button */
+    .profile-panel h2 {
+      margin: 0 0 6px 0;
+      font-size: 1.15rem;
+      padding-right: 56px;
+      /* reserve space for the close button */
     }
 
-    .profile-section {
-      margin: 1rem 0;
+    /* body text inside panel */
+    .profile-panel p {
+      margin: 0.45rem 0;
+      color: #222;
     }
 
-    .profile-section input {
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0.3rem 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+    .profile-panel .small {
+      color: #666;
+      font-size: 0.9rem;
     }
 
-    .profile-section button {
-      margin-top: 0.5rem;
-      padding: 0.5rem 1rem;
+    /* Buttons in the panel (BUT NOT the close-X) */
+    .profile-panel button:not(.close-x) {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
       border: none;
-      background: #0a3d62;
+      background: #764ba2;
       color: #fff;
-      border-radius: 6px;
       cursor: pointer;
+      width: 100%;
+      display: inline-block;
+      box-sizing: border-box;
     }
 
-    .profile-section button:hover {
-      background: #07406e;
+    /* small floating close button (explicitly sized so it doesn't expand) */
+    .close-x {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: none;
+      background: #e74c3c;
+      /* 🔴 red background */
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      color: #fff;
+      /* white "x" */
+      z-index: 1300;
+      transition: background 0.2s ease-in-out;
+    }
+
+    /* hover effect */
+    .close-x:hover {
+      background: #c0392b;
+      /* darker red on hover */
+    }
+
+
+    /* accessibility focus */
+    .close-x:focus {
+      outline: 2px solid rgba(118, 75, 162, 0.25);
+      outline-offset: 2px;
+    }
+
+    /* responsive tweaks */
+    @media (max-width: 768px) {
+      .profile-panel {
+        width: 100%;
+        right: -100%;
+        padding-top: 72px;
+        /* give a little extra top space on small screens */
+      }
+
+      .profile-panel h2 {
+        padding-right: 56px;
+      }
+
+      .close-x {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
 </head>
 
 <body>
-  <script>
-    if (localStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "index.html";
-    }
-  </script>
-
   <header>
-    <button class="profile-btn" id="profileBtn">👤</button>
-    CivicRevolution
-    <span>Empowering Citizens</span>
+    <div class="header-content">
+      <div class="logo-block">
+        <div class="logo" id="logo">CivicRevolution</div>
+        <div class="tagline">Empowering Citizens • Building Tomorrow</div>
+      </div>
+      <button id="profileBtn" class="profile-btn" title="Open profile">👤</button>
+    </div>
   </header>
 
-  <div class="hero">
-    <h2>Welcome👋 <span id="userName"></span></h2>
-    <p>Report issues, track progress, and make your community stronger 💪</p>
-  </div>
 
-  <div id="homeContent">
-    <div class="issue-grid">
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/road.png" alt="Pothole">
-        🚧 Pothole
+
+  <div class="container">
+    <div class="hero">
+      <h2>Welcome 👋 <span id="userName">Guest</span></h2>
+      <p>Report issues, track progress, and make your community stronger together</p>
+    </div>
+
+    <div class="issue-grid" id="issueGrid">
+      <div class="card card1" data-issue="Pothole">
+        <span class="card-icon">🚧</span>
+        <div class="card-title">Road & Pothole Issues</div>
       </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/trash.png" alt="Garbage">
-        🗑 Garbage
+      <div class="card card2" data-issue="Garbage">
+        <span class="card-icon">♻</span>
+        <div class="card-title">Waste Management</div>
       </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/street-light.png" alt="Street Light">
-        💡 Street Light
+      <div class="card card3" data-issue="Street Light">
+        <span class="card-icon">💡</span>
+        <div class="card-title">Street Lighting</div>
       </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/water.png" alt="Water Leakage">
-        💧 Water Leakage
+      <div class="card card4" data-issue="Water Leakage">
+        <span class="card-icon">💧</span>
+        <div class="card-title">Water Infrastructure</div>
       </div>
-      <div class="card" onclick="window.location.href='report.html'">
-        <img src="https://img.icons8.com/fluency/96/error.png" alt="Other Issues">
-        ⚠ Other
+      <div class="card card5" data-issue="Other">
+        <span class="card-icon">⚡</span>
+        <div class="card-title">Other Issues</div>
       </div>
     </div>
 
     <div class="impact">
-      <h3>🌍 Community Impact</h3>
+      <h3>🌍 Community Impact Dashboard</h3>
       <div class="impact-stats">
-        <div class="impact-box">📌 23<br><small>Total Reports</small></div>
-        <div class="impact-box">⏳ 12<br><small>In Progress</small></div>
-        <div class="impact-box">✅ 18<br><small>Resolved</small></div>
+        <div class="impact-box">📊 <span id="totalReports">247</span><br><small class="small">Total Reports</small>
+        </div>
+        <div class="impact-box">⏳ <span id="inProgress">89</span><br><small class="small">In Progress</small></div>
+        <div class="impact-box">✅ <span id="resolved">158</span><br><small class="small">Resolved</small></div>
       </div>
     </div>
-  </div>
-
-  <!-- ✅ Profile Drawer -->
-  <div id="profilePanel" class="profile-panel">
-    <div class="profile-header">
-      <h2>👤 Profile</h2>
-      <!-- 🔥 This calls the global function -->
-      <button onclick="closeProfile()">❌</button>
-    </div>
-    <div class="profile-section">
-      <p><b>Username:</b> <span id="profileName"></span></p>
-      <p><b>Email:</b> <span id="profileEmail"></span></p>
-      <p><b>Phone:</b> <span id="profilePhone"></span></p>
-    </div>
-
-    <hr>
-    <h3>📝 My Reports</h3>
-    <ul>
-      <li>🚧 Pothole – ⏳ Pending</li>
-      <li>🗑 Garbage – 🔧 In Progress</li>
-      <li>💡 Street Light – ✅ Resolved</li>
-    </ul>
-
-    <hr>
-    <h3>📌 Statistics</h3>
-    <p>Total: 3 | ⏳ Pending: 1 | 🔧 In Progress: 1 | ✅ Resolved: 1</p>
-
-    <hr>
-    <h3>🔔 Notifications</h3>
-    <p>✅ Street light issue resolved.</p>
-    <p>⏳ Garbage collection in progress.</p>
-
-    <hr>
-    <button id="profileLogoutBtn">🚪 Logout</button>
   </div>
 
   <footer>
     <button onclick="window.location.href='home.html'">🏠 Home</button>
     <button onclick="window.location.href='report.html'">📝 Report</button>
     <button onclick="window.location.href='maps.html'">🗺 Maps</button>
-    <button id="logoutBtn">🚪 Logout</button>
+    <button id="footerLogout">🚪 Logout</button>
   </footer>
 
+  <!-- Profile Panel -->
+  <aside id="profilePanel" class="profile-panel" aria-hidden="true">
+    <button class="close-x" id="closeProfile">✕</button>
+    <h2>👤 Profile</h2>
+    <p><strong>Name:</strong> <span id="profileName">Loading...</span></p>
+    <p><strong>Email:</strong> <span id="profileEmail">Loading...</span></p>
+    <p><strong>Phone:</strong> <span id="profilePhone">Loading...</span></p>
+    <hr style="margin:12px 0;border:none;border-top:1px solid #eee" />
+    <h3 style="margin:6px 0">📌 My Reports</h3>
+    <ul id="myReports" style="margin-left:1rem;color:#333">
+      <li>🚧 Pothole – ⏳ Pending</li>
+      <li>🗑 Garbage – 🔧 In Progress</li>
+      <li>💡 Street Light – ✅ Resolved</li>
+    </ul>
+    <hr style="margin:12px 0;border:none;border-top:1px solid #eee" />
+    <button id="profileLogout">🚪 Logout</button>
+  </aside>
+
+  <!-- Supabase + app logic -->
   <script type="module">
+    // --- Supabase client (using your earlier provided project) ---
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
     const SUPABASE_URL = 'https://xnqtjcovuqzajuqzaunf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhucXRqY292dXF6YWp1cXphdW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1MzIyMzEsImV4cCI6MjA3MzEwODIzMX0.YbmzZoqOdIX_inX-khtpg1IsiCNUROAvR4Z2N85lEvM';
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const userName = localStorage.getItem("username") || "Guest";
-    const userEmail = localStorage.getItem("email") || "";
-    const userPhone = localStorage.getItem("phone") || "";
-    const userId = localStorage.getItem("userId");
+    async function fetchUserFromSupabase(userId) {
+      try {
+        if (!userId) return null;
+        const { data, error } = await supabase
+          .from('registrations')
+          .select('username, email, phone')
+          .eq('id', userId)
+          .single();
 
-    document.getElementById("userName").textContent = userName;
-    document.getElementById("profileName").textContent = userName;
-
-    // ✅ Show email + phone from localStorage if available
-    if (userEmail) {
-      document.getElementById("profileEmail").textContent = userEmail;
-    }
-    if (userPhone) {
-      document.getElementById("profilePhone").textContent = userPhone;
-    }
-
-    // ✅ Profile button shows first letter
-    const profileBtn = document.getElementById("profileBtn");
-    if (userName && userName !== "Guest") {
-      profileBtn.textContent = userName.charAt(0).toUpperCase();
-    } else {
-      profileBtn.textContent = "👤";
-    }
-
-    function toggleProfile() {
-      document.getElementById("profilePanel").classList.toggle("active");
-    }
-
-    // ✅ New closeProfile function
-    function closeProfile() {
-      document.getElementById("profilePanel").classList.remove("active");
-    }
-
-    // --- IMPORTANT: expose to global scope so inline onclick can find them ---
-    window.closeProfile = closeProfile;
-    window.toggleProfile = toggleProfile;
-
-    document.getElementById("profileBtn").addEventListener("click", function (e) {
-      e.stopPropagation();
-      toggleProfile();
-    });
-
-    document.addEventListener("click", function (e) {
-      const profile = document.getElementById("profilePanel");
-      if (profile.classList.contains("active")) {
-        if (!profile.contains(e.target) && !profileBtn.contains(e.target)) {
-          profile.classList.remove("active");
+        if (error) {
+          console.warn('Supabase fetch error:', error);
+          return null;
         }
+        return data;
+      } catch (err) {
+        console.error('Supabase error', err);
+        return null;
+      }
+    }
+
+    // Expose fetch method so non-module code could call if needed (not required)
+    window._fetchUserFromSupabase = fetchUserFromSupabase;
+  </script>
+
+  <script>
+    // Immediately populate UI from localStorage so UI changes are visible even before Supabase fetch.
+    const userNameEl = document.getElementById('userName');
+    const profileNameEl = document.getElementById('profileName');
+    const profileEmailEl = document.getElementById('profileEmail');
+    const profilePhoneEl = document.getElementById('profilePhone');
+    const profileBtn = document.getElementById('profileBtn');
+    const profilePanel = document.getElementById('profilePanel');
+    const closeProfileBtn = document.getElementById('closeProfile');
+    const profileLogout = document.getElementById('profileLogout');
+    const footerLogout = document.getElementById('footerLogout');
+    const logo = document.getElementById('logo');
+
+    // Load from localStorage (fallbacks)
+    const localName = localStorage.getItem('username') || localStorage.getItem('userName') || 'Guest';
+    const localEmail = localStorage.getItem('email') || '';
+    const localPhone = localStorage.getItem('phone') || '';
+    const userId = localStorage.getItem('userId');
+
+    userNameEl.textContent = localName;
+    profileNameEl.textContent = localName || 'N/A';
+    profileEmailEl.textContent = localEmail || 'N/A';
+    profilePhoneEl.textContent = localPhone || 'N/A';
+
+    // show first letter on profile button
+    if (localName && localName !== 'Guest') {
+      profileBtn.textContent = localName.charAt(0).toUpperCase();
+    } else {
+      profileBtn.textContent = '👤';
+    }
+
+    // open/close handlers
+    function openProfile() {
+      profilePanel.classList.add('open');
+      profilePanel.setAttribute('aria-hidden', 'false');
+    }
+    function hideProfile() {
+      profilePanel.classList.remove('open');
+      profilePanel.setAttribute('aria-hidden', 'true');
+    }
+    profileBtn.addEventListener('click', (e) => { e.stopPropagation(); openProfile(); });
+    closeProfileBtn.addEventListener('click', hideProfile);
+    logo.addEventListener('click', () => openProfile());
+
+    // click outside to close
+    document.addEventListener('click', (e) => {
+      if (profilePanel.classList.contains('open')) {
+        const inside = profilePanel.contains(e.target) || profileBtn.contains(e.target) || logo.contains(e.target);
+        if (!inside) hideProfile();
       }
     });
 
-    // ✅ Fetch Email + Phone from Supabase if userId exists
-    if (userId) {
-      (async () => {
-        const { data, error } = await supabase
-          .from("registrations")
-          .select("email, phone")
-          .eq("id", userId)
-          .single();
-
-        if (!error && data) {
-          document.getElementById("profileEmail").textContent = data.email || userEmail || "N/A";
-          document.getElementById("profilePhone").textContent = data.phone || userPhone || "N/A";
-          localStorage.setItem("phone", data.phone || "");
-        }
-      })();
+    // Logout logic (both in panel and footer)
+    function doLogout() {
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('username');
+      localStorage.removeItem('email');
+      localStorage.removeItem('phone');
+      // redirect to login (index.html)
+      window.location.href = 'index.html';
     }
+    profileLogout.addEventListener('click', doLogout);
+    footerLogout.addEventListener('click', doLogout);
 
-    // ✅ Logout buttons using IDs
-    const logoutButtons = [document.getElementById("logoutBtn"), document.getElementById("profileLogoutBtn")];
-    logoutButtons.forEach(btn => {
-      btn?.addEventListener("click", () => {
-        localStorage.clear(); // Clear all saved user data
-        window.location.href = "index.html"; // Redirect to login page
+    // make cards navigate to report page
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const issue = card.dataset.issue || 'Other';
+        window.location.href = `report.html?issue=${encodeURIComponent(issue)}`;
+
+
       });
     });
-  </script>
 
+    // Try to fetch fresh user data from Supabase (if available). This uses the module script's exported function.
+    (async function refreshFromSupabase() {
+      try {
+        if (!userId) return; // nothing to fetch
+        // call the module's function (which is attached to window in the module script)
+        if (typeof window._fetchUserFromSupabase === 'function') {
+          const supaData = await window._fetchUserFromSupabase(userId);
+          if (supaData) {
+            // update UI + localStorage with authoritative values
+            const name = supaData.username || supaData.name || localName;
+            const email = supaData.email || localEmail;
+            const phone = supaData.phone || localPhone;
+            userNameEl.textContent = name;
+            profileNameEl.textContent = name || 'N/A';
+            profileEmailEl.textContent = email || 'N/A';
+            profilePhoneEl.textContent = phone || 'N/A';
+            localStorage.setItem('username', name || '');
+            localStorage.setItem('email', email || '');
+            localStorage.setItem('phone', phone || '');
+            // update profile button letter
+            profileBtn.textContent = (name && name !== 'Guest') ? name.charAt(0).toUpperCase() : '👤';
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch from Supabase:', err);
+      }
+    })();
+
+    // Parallax effect on header
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const header = document.querySelector('header');
+      if (header) {
+        header.style.transform = `translateY(${scrolled * 0.5}px)`;
+      }
+    });
+
+
+    // If you want to test quickly: open browser console and run:
+    // localStorage.setItem('loggedIn','true'); localStorage.setItem('username','Akshat'); localStorage.setItem('userId','1'); location.reload();
+  </script>
 </body>
 
 </html>
